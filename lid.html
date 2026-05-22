@@ -14,7 +14,7 @@
         --text-primary: #f1f5f9;
         --text-secondary: #94a3b8;
         --text-tertiary: #64748b;
-        --accent-blue: #3b82f6;
+        --accent-blue: #1f7a4d;
         --accent-purple: #8b5cf6;
         --accent-green: #22c55e;
         --accent-red: #ef4444;
@@ -838,6 +838,70 @@
             flex-wrap: wrap;
         }
     }
+
+    /* ========== UNIVERSAL RESPONSIVE (Donezo theme) ========== */
+    @media (max-width: 1024px) {
+        .filter-row, .filters-grid {
+            grid-template-columns: 1fr 1fr !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+        .page-header h1 {
+            font-size: 22px !important;
+        }
+        .filter-row, .filters-grid {
+            grid-template-columns: 1fr !important;
+        }
+        .modal-content {
+            width: 95% !important;
+            margin: 5% auto !important;
+        }
+        table {
+            font-size: 12px;
+        }
+        th, td {
+            padding: 8px !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header h1 {
+            font-size: 20px !important;
+        }
+        .header-buttons, .header-actions {
+            flex-direction: column;
+            width: 100%;
+        }
+        .header-buttons .btn-primary,
+        .header-buttons .btn-secondary,
+        .header-actions .btn-primary,
+        .header-actions .btn-secondary {
+            width: 100%;
+            justify-content: center;
+        }
+        .modal-content {
+            border-radius: 16px !important;
+        }
+        .modal-buttons {
+            flex-direction: column;
+        }
+        .modal-buttons button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (min-width: 1920px) {
+        .houses-main, .obiekt-main, .posts-container, .lids-container, .sim-cards-main {
+            max-width: 1700px !important;
+        }
+    }
+
 </style>
 
 <div class="kanban-wrapper">
@@ -1060,7 +1124,7 @@
                 <div class="form-group">
                     <label>Цвет колонки</label>
                     <div class="color-palette" id="colorPalette">
-                        <div class="color-option" style="background:#3b82f6;" data-color="#3b82f6"></div>
+                        <div class="color-option" style="background:#1f7a4d;" data-color="#1f7a4d"></div>
                         <div class="color-option" style="background:#22c55e;" data-color="#22c55e"></div>
                         <div class="color-option" style="background:#f59e0b;" data-color="#f59e0b"></div>
                         <div class="color-option" style="background:#ef4444;" data-color="#ef4444"></div>
@@ -1274,7 +1338,7 @@ function renderKanbanBoard() {
         <div class="kanban-column" data-column-id="${col.id}" data-order="${col.order_index}" draggable="true"
              ondragstart="handleDragStart(event)" ondragend="handleDragEnd(event)" 
              ondragover="handleDragOver(event)" ondragleave="handleDragLeave(event)" ondrop="handleDrop(event)">
-            <div class="column-header" style="border-bottom-color: ${col.color || '#3b82f6'}">
+            <div class="column-header" style="border-bottom-color: ${col.color || '#1f7a4d'}">
                 <div class="column-left">
                     <i class="fas fa-grip-vertical column-drag-handle"></i>
                     <div class="column-title"><h3>${escapeHtml(col.title)}</h3></div>
@@ -1538,7 +1602,7 @@ async function pasteColumnToCurrentBoard() {
         body: JSON.stringify({ 
             board_id: currentBoardId, 
             title: `${copiedColumnData.title} (копия)`, 
-            color: copiedColumnData.color || '#3b82f6' 
+            color: copiedColumnData.color || '#1f7a4d' 
         })
     });
     
@@ -1671,7 +1735,7 @@ function showToast(msg, duration = 2500) {
 // ==================== MODALS ====================
 function showAddBoardModal() { document.getElementById('boardModalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Создать доску'; document.getElementById('boardId').value = ''; document.getElementById('boardForm').reset(); document.getElementById('boardModal').style.display = 'block'; }
 function closeBoardModal() { document.getElementById('boardModal').style.display = 'none'; }
-function showAddColumnModal() { if(!currentBoardId) {alert('Выберите доску'); return;} document.getElementById('columnModalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Добавить колонку'; document.getElementById('columnId').value = ''; document.getElementById('columnForm').reset(); document.getElementById('columnColor').value = '#3b82f6'; document.getElementById('columnModal').style.display = 'block'; }
+function showAddColumnModal() { if(!currentBoardId) {alert('Выберите доску'); return;} document.getElementById('columnModalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Добавить колонку'; document.getElementById('columnId').value = ''; document.getElementById('columnForm').reset(); document.getElementById('columnColor').value = '#1f7a4d'; document.getElementById('columnModal').style.display = 'block'; }
 function closeColumnModal() { document.getElementById('columnModal').style.display = 'none'; }
 function showAddLeadModal() { if(!currentBoardId) {alert('Выберите доску'); return;} if(!allColumns.length) {alert('Сначала создайте колонку'); return;} document.getElementById('leadModalTitle').innerHTML = '<i class="fas fa-user-plus"></i> Добавить лид'; document.getElementById('leadId').value = ''; document.getElementById('leadForm').reset(); document.getElementById('leadModal').style.display = 'block'; }
 function closeLeadModal() { document.getElementById('leadModal').style.display = 'none'; }
@@ -1683,7 +1747,7 @@ function showSelectBoardModal() { loadBoardsList(); document.getElementById('sel
 function closeSelectBoardModal() { document.getElementById('selectBoardModal').style.display = 'none'; }
 function closeViewLeadModal() { document.getElementById('viewLeadModal').style.display = 'none'; }
 
-function editColumn(id) { const c = allColumns.find(c => c.id === id); if(c) { document.getElementById('columnModalTitle').innerHTML = '<i class="fas fa-edit"></i> Редактировать колонку'; document.getElementById('columnId').value = c.id; document.getElementById('columnTitle').value = c.title; document.getElementById('columnColor').value = c.color || '#3b82f6'; document.getElementById('columnModal').style.display = 'block'; } }
+function editColumn(id) { const c = allColumns.find(c => c.id === id); if(c) { document.getElementById('columnModalTitle').innerHTML = '<i class="fas fa-edit"></i> Редактировать колонку'; document.getElementById('columnId').value = c.id; document.getElementById('columnTitle').value = c.title; document.getElementById('columnColor').value = c.color || '#1f7a4d'; document.getElementById('columnModal').style.display = 'block'; } }
 function editLead(id) { const l = allLeads.find(l => l.id === id); if(l) { document.getElementById('leadModalTitle').innerHTML = '<i class="fas fa-edit"></i> Редактировать лид'; document.getElementById('leadId').value = l.id; document.getElementById('leadClientName').value = l.client_name; document.getElementById('leadPhone').value = l.phone; document.getElementById('leadSource').value = l.source; document.getElementById('leadTopic').value = l.topic || ''; document.getElementById('leadComment').value = l.comment || ''; document.getElementById('leadMortgage').value = l.mortgage; document.getElementById('leadBox').value = l.box; document.getElementById('leadModal').style.display = 'block'; } }
 function viewLead(id) { const l = allLeads.find(l => l.id === id); if(!l) return; const col = allColumns.find(c => c.id === l.column_id); document.getElementById('viewLeadTitle').innerHTML = `<i class="fas fa-user-circle"></i> ${escapeHtml(l.client_name)}`; document.getElementById('viewLeadContent').innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;"><div><strong>📞 Телефон:</strong><br>${escapeHtml(l.phone)}</div><div><strong>📌 Источник:</strong><br>${l.source}</div><div><strong>📋 Колонка:</strong><br>${col ? escapeHtml(col.title) : '—'}</div><div><strong>👤 Автор:</strong><br>${escapeHtml(l.author_name || '—')}</div><div><strong>💬 Тема:</strong><br>${escapeHtml(l.topic || '-')}</div><div><strong>🏦 Ипотека:</strong><br>${l.mortgage ? '✅ Да' : '❌ Нет'}</div><div><strong>📦 Коробка:</strong><br>${l.box ? '✅ Да' : '❌ Нет'}</div><div><strong>📅 Дата:</strong><br>${new Date(l.created_date).toLocaleString()}</div><div class="form-row-full"><strong>📝 Комментарий:</strong><br>${escapeHtml(l.comment || '-')}</div></div>`; document.getElementById('viewLeadModal').style.display = 'block'; }
 function exportColumn(id) { window.open(`/api/kanban/columns/${id}/export/excel`, '_blank'); }
@@ -1711,8 +1775,8 @@ async function importExcel() {
 }
 async function switchBoard(id) { currentBoardId = id; await loadBoardData(); renderBoardsPanel(); updateBoardUI(); resetFilters(); showToast('Доска переключена'); }
 function updateBoardUI() { const b = allBoards.find(b => b.id === currentBoardId); if(b) { document.getElementById('currentBoardTitle').innerHTML = `<i class="fas fa-chalkboard"></i> ${escapeHtml(b.title)}`; document.getElementById('boardContainer').style.background = b.color || '#0f172a'; } }
-function renderBoardsPanel() { const active = allBoards.filter(b => !b.is_archived); const panel = document.getElementById('boardsBottomPanel'); panel.innerHTML = active.map(b => `<div class="board-tab ${currentBoardId === b.id ? 'active' : ''}" onclick="switchBoard(${b.id})"><div class="board-tab-icon" style="background:${b.color || '#3b82f6'}"><i class="fas fa-columns"></i></div><span class="board-tab-name">${escapeHtml(b.title)}</span></div>`).join('') + `<div class="board-tab create-board-tab" onclick="showAddBoardModal()"><i class="fas fa-plus"></i><span style="margin-left:6px;">Создать</span></div>`; }
-function loadBoardsList() { const c = document.getElementById('boardsListContainer'); c.innerHTML = allBoards.filter(b => !b.is_archived).map(b => `<div class="board-tab ${currentBoardId === b.id ? 'active' : ''}" style="margin-bottom:8px; display:flex; align-items:center; gap:10px; padding:8px; border-radius:8px; cursor:pointer;" onclick="selectBoard(${b.id})"><div class="board-tab-icon" style="background:${b.color || '#3b82f6'}"><i class="fas fa-columns"></i></div><span style="flex:1">${escapeHtml(b.title)}</span></div>`).join(''); if(!c.innerHTML) c.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-tertiary);">Нет досок</div>'; }
+function renderBoardsPanel() { const active = allBoards.filter(b => !b.is_archived); const panel = document.getElementById('boardsBottomPanel'); panel.innerHTML = active.map(b => `<div class="board-tab ${currentBoardId === b.id ? 'active' : ''}" onclick="switchBoard(${b.id})"><div class="board-tab-icon" style="background:${b.color || '#1f7a4d'}"><i class="fas fa-columns"></i></div><span class="board-tab-name">${escapeHtml(b.title)}</span></div>`).join('') + `<div class="board-tab create-board-tab" onclick="showAddBoardModal()"><i class="fas fa-plus"></i><span style="margin-left:6px;">Создать</span></div>`; }
+function loadBoardsList() { const c = document.getElementById('boardsListContainer'); c.innerHTML = allBoards.filter(b => !b.is_archived).map(b => `<div class="board-tab ${currentBoardId === b.id ? 'active' : ''}" style="margin-bottom:8px; display:flex; align-items:center; gap:10px; padding:8px; border-radius:8px; cursor:pointer;" onclick="selectBoard(${b.id})"><div class="board-tab-icon" style="background:${b.color || '#1f7a4d'}"><i class="fas fa-columns"></i></div><span style="flex:1">${escapeHtml(b.title)}</span></div>`).join(''); if(!c.innerHTML) c.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-tertiary);">Нет досок</div>'; }
 function selectBoard(id) { switchBoard(id); closeSelectBoardModal(); }
 function filterBoardsList() { const s = document.getElementById('boardSearch').value.toLowerCase(); document.querySelectorAll('#boardsListContainer .board-tab').forEach(tab => { tab.style.display = tab.innerText.toLowerCase().includes(s) ? 'flex' : 'none'; }); }
 async function loadUsersForFilters() { const res = await fetch('/api/users/list'); const users = await res.json(); const sel = document.getElementById('authorFilter'); sel.innerHTML = '<option value="all">Все сотрудники</option>' + users.map(u => `<option value="${u.id}">${escapeHtml(u.full_name)}</option>`).join(''); }

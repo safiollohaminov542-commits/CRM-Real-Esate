@@ -15,7 +15,7 @@
         --text-primary: #212529;
         --text-secondary: #6c757d;
         --text-tertiary: #adb5bd;
-        --accent-blue: #3b82f6;
+        --accent-blue: #1f7a4d;
         --accent-purple: #8b5cf6;
         --accent-green: #22c55e;
         --accent-red: #ef4444;
@@ -910,6 +910,47 @@
             grid-column: span 1;
         }
     }
+
+    /* ========== UNIVERSAL RESPONSIVE (Donezo theme) ========== */
+    @media (max-width: 1024px) {
+        .filter-row, .filters-grid {
+            grid-template-columns: 1fr 1fr !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+        .page-header h1 {
+            font-size: 22px !important;
+        }
+        .filter-row, .filters-grid {
+            grid-template-columns: 1fr !important;
+        }
+        .modal-content {
+            width: 95% !important;
+            margin: 5% auto !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header h1 {
+            font-size: 20px !important;
+        }
+        .modal-content {
+            border-radius: 16px !important;
+        }
+        .modal-buttons {
+            flex-direction: column;
+        }
+        .modal-buttons button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
 </style>
 
 <div class="kanban-wrapper">
@@ -1136,7 +1177,7 @@
                 <div class="form-group">
                     <label>Ранг</label>
                     <div class="color-palette">
-                        <div class="color-option" style="background:#3b82f6;" data-color="#3b82f6"></div>
+                        <div class="color-option" style="background:#1f7a4d;" data-color="#1f7a4d"></div>
                         <div class="color-option" style="background:#22c55e;" data-color="#22c55e"></div>
                         <div class="color-option" style="background:#f59e0b;" data-color="#f59e0b"></div>
                         <div class="color-option" style="background:#ef4444;" data-color="#ef4444"></div>
@@ -1144,7 +1185,7 @@
                         <div class="color-option" style="background:#ec4899;" data-color="#ec4899"></div>
                         <div class="color-option" style="background:#06b6d4;" data-color="#06b6d4"></div>
                     </div>
-                    <input type="color" id="columnColor" value="#3b82f6" style="width: 100%; margin-top: 8px;">
+                    <input type="color" id="columnColor" value="#1f7a4d" style="width: 100%; margin-top: 8px;">
                 </div>
             </div>
             <div class="modal-footer">
@@ -1341,7 +1382,7 @@ function renderBoardsPanel() {
     const panel = document.getElementById('boardsBottomPanel');
     panel.innerHTML = allBoards.map(b => `
         <div class="board-tab ${currentBoardId === b.id ? 'active' : ''}" onclick="switchBoard(${b.id})">
-            <div class="board-tab-icon" style="background:${b.color || '#3b82f6'}"><i class="fas fa-chalkboard"></i></div>
+            <div class="board-tab-icon" style="background:${b.color || '#1f7a4d'}"><i class="fas fa-chalkboard"></i></div>
             <span class="board-tab-name">${escapeHtml(b.title)}</span>
         </div>
     `).join('') + `<div class="board-tab create-board-tab" onclick="showAddBoardModal()"><i class="fas fa-plus"></i><span>Доскаи нав</span></div>`;
@@ -1384,7 +1425,7 @@ function renderKanbanBoard() {
     container.innerHTML = sortedCols.map(col => `
         <div class="kanban-column" data-column-id="${col.id}" data-column-title="${escapeHtml(col.title)}"
              ondragover="handleColumnDragOver(event)" ondrop="handleColumnDrop(event)" ondragleave="handleDragLeave(event)">
-            <div class="column-header" style="border-bottom-color: ${col.color || '#3b82f6'}">
+            <div class="column-header" style="border-bottom-color: ${col.color || '#1f7a4d'}">
                 <div class="column-left">
                     <i class="fas fa-grip-vertical column-drag-handle" draggable="true" 
                        ondragstart="handleColumnDragStart(event, ${col.id})" ondragend="handleDragEnd(event)"></i>
@@ -2000,7 +2041,7 @@ function showAddColumnModal() {
     document.getElementById('columnModalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Колонкаи нав';
     document.getElementById('columnId').value = '';
     document.getElementById('columnForm').reset();
-    document.getElementById('columnColor').value = '#3b82f6';
+    document.getElementById('columnColor').value = '#1f7a4d';
     openModal('columnModal');
 }
 
@@ -2031,7 +2072,7 @@ function editColumn(id) {
         document.getElementById('columnModalTitle').innerHTML = '<i class="fas fa-edit"></i> Таҳрири колонка';
         document.getElementById('columnId').value = col.id;
         document.getElementById('columnTitle').value = col.title;
-        document.getElementById('columnColor').value = col.color || '#3b82f6';
+        document.getElementById('columnColor').value = col.color || '#1f7a4d';
         openModal('columnModal');
     }
 }
@@ -2118,7 +2159,7 @@ function loadBoardsList() {
     const c = document.getElementById('boardsListContainer');
     c.innerHTML = allBoards.map(b => `
         <div class="board-tab ${currentBoardId === b.id ? 'active' : ''}" style="margin-bottom:8px; display:flex; align-items:center; gap:10px; padding:10px; border-radius:10px; cursor:pointer;" onclick="selectBoard(${b.id})">
-            <div class="board-tab-icon" style="background:${b.color || '#3b82f6'}"><i class="fas fa-chalkboard"></i></div>
+            <div class="board-tab-icon" style="background:${b.color || '#1f7a4d'}"><i class="fas fa-chalkboard"></i></div>
             <span style="flex:1">${escapeHtml(b.title)}</span>
         </div>
     `).join('');

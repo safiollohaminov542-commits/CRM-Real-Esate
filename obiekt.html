@@ -11,8 +11,8 @@
         --text-primary: #1e293b;
         --text-secondary: #64748b;
         --text-tertiary: #94a3b8;
-        --accent-blue: #2563eb;
-        --accent-purple: #7c3aed;
+        --accent-blue: #1f7a4d;
+        --accent-purple: #0f5f3a;
         --accent-green: #10b981;
         --accent-red: #ef4444;
         --accent-orange: #f59e0b;
@@ -100,7 +100,7 @@
     .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
     .stat-info h4 { font-size: 12px; color: var(--text-secondary); margin-bottom: 6px; }
     .stat-number { font-size: 28px; font-weight: 700; color: var(--text-primary); }
-    .stat-icon { width: 48px; height: 48px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 24px; background: linear-gradient(135deg, #2563eb10, #7c3aed10); color: var(--accent-blue); }
+    .stat-icon { width: 48px; height: 48px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; font-size: 24px; background: linear-gradient(135deg, #1f7a4d10, #0f5f3a10); color: var(--accent-blue); }
 
     /* Filters */
     .filters-bar {
@@ -517,6 +517,70 @@
         .filter-group { justify-content: space-between; }
         .reset-btn { justify-content: center; }
     }
+
+    /* ========== UNIVERSAL RESPONSIVE (Donezo theme) ========== */
+    @media (max-width: 1024px) {
+        .filter-row, .filters-grid {
+            grid-template-columns: 1fr 1fr !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+        .page-header h1 {
+            font-size: 22px !important;
+        }
+        .filter-row, .filters-grid {
+            grid-template-columns: 1fr !important;
+        }
+        .modal-content {
+            width: 95% !important;
+            margin: 5% auto !important;
+        }
+        table {
+            font-size: 12px;
+        }
+        th, td {
+            padding: 8px !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header h1 {
+            font-size: 20px !important;
+        }
+        .header-buttons, .header-actions {
+            flex-direction: column;
+            width: 100%;
+        }
+        .header-buttons .btn-primary,
+        .header-buttons .btn-secondary,
+        .header-actions .btn-primary,
+        .header-actions .btn-secondary {
+            width: 100%;
+            justify-content: center;
+        }
+        .modal-content {
+            border-radius: 16px !important;
+        }
+        .modal-buttons {
+            flex-direction: column;
+        }
+        .modal-buttons button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (min-width: 1920px) {
+        .houses-main, .obiekt-main, .posts-container, .lids-container, .sim-cards-main {
+            max-width: 1700px !important;
+        }
+    }
+
 </style>
 
 <div class="dashboard-container">
