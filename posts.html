@@ -57,7 +57,7 @@
     .stat-number {
         font-size: 32px;
         font-weight: 700;
-        color: #2563eb;
+        color: #1f7a4d;
     }
     
     /* Filters Section */
@@ -135,13 +135,13 @@
     }
     
     .btn-primary {
-        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        background: linear-gradient(135deg, #1f7a4d, #0f5f3a);
         color: white;
     }
     
     .btn-primary:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+        box-shadow: 0 4px 12px rgba(31,122,77,0.3);
     }
     
     .btn-secondary {
@@ -151,8 +151,8 @@
     }
     
     .btn-secondary:hover {
-        border-color: #2563eb;
-        color: #2563eb;
+        border-color: #1f7a4d;
+        color: #1f7a4d;
     }
     
     .btn-excel {
@@ -241,7 +241,7 @@
     }
     
     .platform-header {
-        background: #2563eb10;
+        background: #1f7a4d10;
     }
     
     /* Posts Grid */
@@ -312,7 +312,7 @@
         font-weight: 500;
     }
     
-    .type-reels { background: #dbeafe; color: #2563eb; }
+    .type-reels { background: #d4edda; color: #1f7a4d; }
     .type-publication { background: #d1fae5; color: #059669; }
     .type-stories { background: #fed7aa; color: #ea580c; }
     .type-other { background: #f1f5f9; color: #64748b; }
@@ -356,7 +356,7 @@
         transition: all 0.2s;
     }
     
-    .edit-post-btn { color: #2563eb; }
+    .edit-post-btn { color: #1f7a4d; }
     .delete-post-btn { color: #ef4444; }
     .edit-post-btn:hover, .delete-post-btn:hover { background: #f0f2f5; }
     
@@ -451,6 +451,70 @@
             grid-template-columns: 1fr;
         }
     }
+
+    /* ========== UNIVERSAL RESPONSIVE (Donezo theme) ========== */
+    @media (max-width: 1024px) {
+        .filter-row, .filters-grid {
+            grid-template-columns: 1fr 1fr !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+        .page-header h1 {
+            font-size: 22px !important;
+        }
+        .filter-row, .filters-grid {
+            grid-template-columns: 1fr !important;
+        }
+        .modal-content {
+            width: 95% !important;
+            margin: 5% auto !important;
+        }
+        table {
+            font-size: 12px;
+        }
+        th, td {
+            padding: 8px !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header h1 {
+            font-size: 20px !important;
+        }
+        .header-buttons, .header-actions {
+            flex-direction: column;
+            width: 100%;
+        }
+        .header-buttons .btn-primary,
+        .header-buttons .btn-secondary,
+        .header-actions .btn-primary,
+        .header-actions .btn-secondary {
+            width: 100%;
+            justify-content: center;
+        }
+        .modal-content {
+            border-radius: 16px !important;
+        }
+        .modal-buttons {
+            flex-direction: column;
+        }
+        .modal-buttons button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (min-width: 1920px) {
+        .houses-main, .obiekt-main, .posts-container, .lids-container, .sim-cards-main {
+            max-width: 1700px !important;
+        }
+    }
+
 </style>
 
 <div class="posts-container">
@@ -836,7 +900,7 @@ function renderPostsGrid(posts) {
                         <button class="delete-post-btn" onclick="deletePost(${post.id})"><i class="fas fa-trash-alt"></i></button>
                     </div>
                 </div>
-                ${post.link ? `<div style="margin-top: 10px;"><a href="${post.link}" target="_blank" style="font-size: 12px; color: #2563eb; text-decoration: none;"><i class="fas fa-external-link-alt"></i> Посмотреть пост</a></div>` : ''}
+                ${post.link ? `<div style="margin-top: 10px;"><a href="${post.link}" target="_blank" style="font-size: 12px; color: #1f7a4d; text-decoration: none;"><i class="fas fa-external-link-alt"></i> Посмотреть пост</a></div>` : ''}
             </div>
         </div>`;
     }).join('');
@@ -860,7 +924,7 @@ function renderCharts(posts) {
             labels: ['Reels', 'Stories', 'Публикации'],
             datasets: [{
                 data: [reels, stories, publications],
-                backgroundColor: ['#3b82f6', '#f59e0b', '#10b981'],
+                backgroundColor: ['#1f7a4d', '#f59e0b', '#10b981'],
                 borderWidth: 0
             }]
         },
@@ -890,7 +954,7 @@ function renderCharts(posts) {
             datasets: [{
                 label: 'Количество постов',
                 data: platformData,
-                backgroundColor: '#2563eb',
+                backgroundColor: '#1f7a4d',
                 borderRadius: 8
             }]
         },

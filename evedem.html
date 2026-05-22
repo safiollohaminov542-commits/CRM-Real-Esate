@@ -1,213 +1,260 @@
 {% extends "base.html" %}
-{% block title %}Уведомления{% endblock %}
+{% block title %}Огоҳиҳо{% endblock %}
 
 {% block content %}
 <style>
-    .notifications-container {
-        max-width: 900px;
-        margin: 0 auto;
-    }
-    
-    .page-header {
-        margin-bottom: 28px;
+    .notif-page-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
         gap: 16px;
+        margin-bottom: 24px;
     }
-    
-    .page-header h1 {
+
+    .notif-page-header-left h1 {
         font-size: 28px;
         font-weight: 700;
-        color: #1a1a2e;
+        color: var(--text-dark);
         display: flex;
         align-items: center;
         gap: 12px;
+        margin-bottom: 4px;
     }
-    
+
+    .notif-page-header-left p {
+        color: var(--text-soft);
+        font-size: 14px;
+    }
+
     .unread-badge {
-        background: #2563eb;
+        background: var(--green-primary);
         color: white;
         padding: 4px 12px;
         border-radius: 30px;
-        font-size: 14px;
+        font-size: 13px;
+        font-weight: 600;
     }
-    
+
     .filter-buttons {
         display: flex;
         gap: 10px;
         flex-wrap: wrap;
+        margin-bottom: 20px;
     }
-    
+
     .filter-btn {
-        padding: 8px 16px;
+        padding: 9px 18px;
         border-radius: 30px;
-        border: 1px solid #e1e4e8;
+        border: 1.5px solid var(--border-soft);
         background: white;
         cursor: pointer;
         transition: all 0.2s;
         font-size: 13px;
+        font-weight: 500;
+        color: var(--text-medium);
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: inherit;
     }
-    
+
+    .filter-btn:hover {
+        border-color: var(--green-primary);
+        color: var(--green-primary);
+    }
+
     .filter-btn.active {
-        background: #2563eb;
+        background: var(--green-primary);
         color: white;
-        border-color: #2563eb;
+        border-color: var(--green-primary);
     }
-    
+
     .notifications-list {
         background: white;
-        border-radius: 20px;
-        border: 1px solid #eef2f6;
+        border-radius: var(--radius);
+        border: 1px solid var(--border-soft);
         overflow: hidden;
     }
-    
+
     .notification-item {
         display: flex;
         align-items: center;
         padding: 16px 20px;
-        border-bottom: 1px solid #f0f2f5;
+        border-bottom: 1px solid var(--border-soft);
         transition: background 0.2s;
         cursor: pointer;
         text-decoration: none;
         color: inherit;
+        gap: 16px;
     }
-    
+
+    .notification-item:last-child {
+        border-bottom: none;
+    }
+
     .notification-item:hover {
-        background: #f8fafc;
+        background: var(--green-soft);
     }
-    
+
     .notification-item.unread {
-        background: #eff6ff;
+        background: var(--green-soft);
     }
-    
+
+    .notification-item.unread::before {
+        content: '';
+        width: 4px;
+        height: 38px;
+        background: var(--green-primary);
+        border-radius: 4px;
+        margin-right: -8px;
+    }
+
     .notification-icon {
         width: 48px;
         height: 48px;
-        border-radius: 50%;
+        border-radius: 14px;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-right: 16px;
         flex-shrink: 0;
+        font-size: 18px;
     }
-    
-    .icon-task { background: #dbeafe; color: #2563eb; }
-    .icon-chat { background: #dcfce7; color: #10b981; }
-    .icon-zayavka { background: #fed7aa; color: #ea580c; }
-    .icon-lid { background: #e0e7ff; color: #4f46e5; }
+
+    .icon-task { background: #e0f2fe; color: #0369a1; }
+    .icon-chat { background: var(--green-soft); color: var(--green-primary); }
+    .icon-zayavka { background: #fef3c7; color: #b45309; }
+    .icon-lid { background: #fce7f3; color: #be185d; }
     .icon-system { background: #f1f5f9; color: #64748b; }
-    
+
     .notification-content {
         flex: 1;
+        min-width: 0;
     }
-    
+
     .notification-title {
         font-weight: 600;
-        color: #1a1a2e;
+        color: var(--text-dark);
         margin-bottom: 4px;
+        font-size: 14px;
     }
-    
+
     .notification-message {
         font-size: 13px;
-        color: #5b6e8c;
+        color: var(--text-medium);
         margin-bottom: 4px;
+        line-height: 1.4;
     }
-    
+
     .notification-date {
         font-size: 11px;
-        color: #8b9dc3;
+        color: var(--text-soft);
     }
-    
+
     .notification-actions {
         display: flex;
         gap: 8px;
         flex-shrink: 0;
     }
-    
+
     .mark-read-btn, .delete-notif-btn {
-        background: transparent;
+        background: var(--bg-page);
         border: none;
         cursor: pointer;
-        font-size: 14px;
-        padding: 6px;
-        border-radius: 8px;
+        font-size: 13px;
+        padding: 8px;
+        border-radius: 10px;
         transition: all 0.2s;
-    }
-    
-    .mark-read-btn { color: #2563eb; }
-    .delete-notif-btn { color: #ef4444; }
-    
-    .mark-read-btn:hover, .delete-notif-btn:hover {
-        background: #f0f2f5;
-    }
-    
-    .empty-state {
-        text-align: center;
-        padding: 60px;
-        color: #8b9dc3;
-    }
-    
-    .btn-primary {
-        background: linear-gradient(135deg, #2563eb, #7c3aed);
-        color: white;
-        border: none;
-        padding: 10px 20px;
-        border-radius: 12px;
-        font-weight: 600;
-        cursor: pointer;
+        width: 34px;
+        height: 34px;
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        justify-content: center;
     }
-    
+
+    .mark-read-btn { color: var(--green-primary); }
+    .delete-notif-btn { color: #ef4444; }
+
+    .mark-read-btn:hover { background: var(--green-light); }
+    .delete-notif-btn:hover { background: #fee2e2; }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: var(--text-soft);
+    }
+
+    .empty-state i {
+        font-size: 48px;
+        color: var(--green-primary);
+        opacity: 0.3;
+        margin-bottom: 12px;
+        display: block;
+    }
+
     @media (max-width: 768px) {
         .notification-item {
             flex-wrap: wrap;
+            padding: 14px;
         }
         .notification-actions {
             margin-top: 10px;
-            margin-left: 48px;
+            margin-left: 60px;
+        }
+        .filter-btn {
+            padding: 7px 12px;
+            font-size: 12px;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .notif-page-header-left h1 {
+            font-size: 22px;
+        }
+        .notification-icon {
+            width: 40px;
+            height: 40px;
+            font-size: 16px;
         }
     }
 </style>
 
-<div class="notifications-container">
-    <div class="page-header">
+<div class="notif-page-header">
+    <div class="notif-page-header-left">
         <h1>
-            <i class="fas fa-bell"></i> Уведомления
+            <i class="fas fa-bell"></i> Огоҳиҳо
             <span class="unread-badge" id="unreadCount">0</span>
         </h1>
-        <div style="display: flex; gap: 12px;">
-            <button class="btn-primary" onclick="markAllAsRead()">
-                <i class="fas fa-check-double"></i> Отметить все прочитанными
-            </button>
-        </div>
+        <p>Хабарҳои нав ва санҷидашудаи система</p>
     </div>
-    
-    <div class="filter-buttons">
-        <button class="filter-btn active" data-filter="all" onclick="filterNotifications('all')">Все</button>
-        <button class="filter-btn" data-filter="task" onclick="filterNotifications('task')">
-            <i class="fas fa-tasks"></i> Задачи
-        </button>
-        <button class="filter-btn" data-filter="zayavka" onclick="filterNotifications('zayavka')">
-            <i class="fas fa-file-alt"></i> Заявки
-        </button>
-        <button class="filter-btn" data-filter="chat" onclick="filterNotifications('chat')">
-            <i class="fas fa-comments"></i> Чат
-        </button>
-        <button class="filter-btn" data-filter="lid" onclick="filterNotifications('lid')">
-            <i class="fas fa-users"></i> Лиды
-        </button>
-        <button class="filter-btn" data-filter="system" onclick="filterNotifications('system')">
-            <i class="fas fa-cog"></i> Системные
-        </button>
-    </div>
-    
-    <div class="notifications-list" id="notificationsList">
-        <div class="empty-state"><i class="fas fa-spinner fa-spin"></i> Загрузка...</div>
-    </div>
+    <button class="btn-primary" onclick="markAllAsRead()">
+        <i class="fas fa-check-double"></i> Ҳамаро санҷидашуда қайд кардан
+    </button>
+</div>
+
+<div class="filter-buttons">
+    <button class="filter-btn active" data-filter="all" onclick="filterNotifications('all')">
+        <i class="fas fa-list"></i> Ҳама
+    </button>
+    <button class="filter-btn" data-filter="task" onclick="filterNotifications('task')">
+        <i class="fas fa-tasks"></i> Вазифаҳо
+    </button>
+    <button class="filter-btn" data-filter="zayavka" onclick="filterNotifications('zayavka')">
+        <i class="fas fa-file-alt"></i> Заявкаҳо
+    </button>
+    <button class="filter-btn" data-filter="chat" onclick="filterNotifications('chat')">
+        <i class="fas fa-comments"></i> Суҳбат
+    </button>
+    <button class="filter-btn" data-filter="lid" onclick="filterNotifications('lid')">
+        <i class="fas fa-fire"></i> Лидҳо
+    </button>
+    <button class="filter-btn" data-filter="system" onclick="filterNotifications('system')">
+        <i class="fas fa-cog"></i> Системавӣ
+    </button>
+</div>
+
+<div class="notifications-list" id="notificationsList">
+    <div class="empty-state"><i class="fas fa-spinner fa-spin"></i><div>Бор шуда истодааст...</div></div>
 </div>
 
 <script>
@@ -219,7 +266,7 @@ function getNotificationIcon(type) {
         'task': '<i class="fas fa-tasks"></i>',
         'chat': '<i class="fas fa-comments"></i>',
         'zayavka': '<i class="fas fa-file-alt"></i>',
-        'lid': '<i class="fas fa-users"></i>',
+        'lid': '<i class="fas fa-fire"></i>',
         'system': '<i class="fas fa-cog"></i>'
     };
     return icons[type] || icons['system'];
@@ -237,11 +284,15 @@ function getNotificationIconClass(type) {
 }
 
 async function loadNotifications() {
-    const response = await fetch('/api/notifications');
-    const data = await response.json();
-    allNotifications = data.notifications;
-    document.getElementById('unreadCount').textContent = data.unread_count;
-    renderNotifications();
+    try {
+        const response = await fetch('/api/notifications');
+        const data = await response.json();
+        allNotifications = data.notifications || [];
+        document.getElementById('unreadCount').textContent = data.unread_count || 0;
+        renderNotifications();
+    } catch (e) {
+        document.getElementById('notificationsList').innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i><div>Хатогии бор кардан</div></div>';
+    }
 }
 
 function filterNotifications(type) {
@@ -258,33 +309,33 @@ function filterNotifications(type) {
 function renderNotifications() {
     const container = document.getElementById('notificationsList');
     let filtered = allNotifications;
-    
+
     if (currentFilter !== 'all') {
         filtered = allNotifications.filter(n => n.type === currentFilter);
     }
-    
+
     if (filtered.length === 0) {
-        container.innerHTML = '<div class="empty-state"><i class="fas fa-bell-slash"></i> Нет уведомлений</div>';
+        container.innerHTML = '<div class="empty-state"><i class="fas fa-bell-slash"></i><div>Огоҳӣ нест</div></div>';
         return;
     }
-    
+
     container.innerHTML = filtered.map(notif => `
-        <div class="notification-item ${notif.is_read === 0 ? 'unread' : ''}" data-id="${notif.id}" onclick="handleNotificationClick(${notif.id}, '${notif.link}')">
+        <div class="notification-item ${notif.is_read === 0 ? 'unread' : ''}" data-id="${notif.id}" onclick="handleNotificationClick(${notif.id}, '${notif.link || ''}')">
             <div class="notification-icon ${getNotificationIconClass(notif.type)}">
                 ${getNotificationIcon(notif.type)}
             </div>
             <div class="notification-content">
                 <div class="notification-title">${escapeHtml(notif.title)}</div>
                 <div class="notification-message">${escapeHtml(notif.message)}</div>
-                <div class="notification-date">${formatDate(notif.created_date)}</div>
+                <div class="notification-date"><i class="far fa-clock"></i> ${formatRelativeDate(notif.created_date)}</div>
             </div>
             <div class="notification-actions" onclick="event.stopPropagation()">
                 ${notif.is_read === 0 ? `
-                    <button class="mark-read-btn" onclick="markAsRead(${notif.id})">
+                    <button class="mark-read-btn" onclick="markAsRead(${notif.id})" title="Санҷидашуда">
                         <i class="fas fa-check"></i>
                     </button>
                 ` : ''}
-                <button class="delete-notif-btn" onclick="deleteNotification(${notif.id})">
+                <button class="delete-notif-btn" onclick="deleteNotification(${notif.id})" title="Ҳазф">
                     <i class="fas fa-trash-alt"></i>
                 </button>
             </div>
@@ -294,7 +345,7 @@ function renderNotifications() {
 
 function handleNotificationClick(id, link) {
     markAsRead(id);
-    if (link) {
+    if (link && link !== 'null' && link !== '') {
         window.location.href = link;
     }
 }
@@ -306,54 +357,33 @@ async function markAsRead(id) {
         body: JSON.stringify({ id: id })
     });
     loadNotifications();
-    updateUnreadCount();
 }
 
 async function markAllAsRead() {
     await fetch('/api/notifications/mark-all-read', { method: 'POST' });
     loadNotifications();
-    updateUnreadCount();
 }
 
 async function deleteNotification(id) {
-    if (confirm('Удалить уведомление?')) {
+    if (confirm('Огоҳиро ҳазф мекунед?')) {
         await fetch(`/api/notifications/${id}`, { method: 'DELETE' });
         loadNotifications();
-        updateUnreadCount();
     }
 }
 
-function formatDate(dateString) {
+function formatRelativeDate(dateString) {
     const date = new Date(dateString);
     const now = new Date();
     const diff = now - date;
-    
-    if (diff < 60000) return 'только что';
-    if (diff < 3600000) return `${Math.floor(diff / 60000)} мин назад`;
-    if (diff < 86400000) return `${Math.floor(diff / 3600000)} ч назад`;
+
+    if (diff < 60000) return 'ҳозира';
+    if (diff < 3600000) return `${Math.floor(diff / 60000)} дақиқа пеш`;
+    if (diff < 86400000) return `${Math.floor(diff / 3600000)} соат пеш`;
+    if (diff < 604800000) return `${Math.floor(diff / 86400000)} рӯз пеш`;
     return date.toLocaleDateString('ru-RU');
 }
 
-async function updateUnreadCount() {
-    const response = await fetch('/api/notifications/unread/count');
-    const data = await response.json();
-    const unreadElement = document.getElementById('unreadCount');
-    if (unreadElement) unreadElement.textContent = data.unread_count;
-    
-    // Обновление счетчика в sidebar
-    const sidebarBadge = document.getElementById('notificationsBadge');
-    if (sidebarBadge) {
-        if (data.unread_count > 0) {
-            sidebarBadge.style.display = 'inline-flex';
-            sidebarBadge.textContent = data.unread_count > 9 ? '9+' : data.unread_count;
-        } else {
-            sidebarBadge.style.display = 'none';
-        }
-    }
-}
-
 loadNotifications();
-// Обновление каждые 10 секунд
-setInterval(() => { loadNotifications(); updateUnreadCount(); }, 10000);
+setInterval(loadNotifications, 15000);
 </script>
 {% endblock %}

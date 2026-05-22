@@ -44,12 +44,12 @@
     
     .search-box input:focus {
         outline: none;
-        border-color: #2563eb;
-        box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+        border-color: #1f7a4d;
+        box-shadow: 0 0 0 3px rgba(31,122,77,0.1);
     }
     
     .btn-primary {
-        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        background: linear-gradient(135deg, #1f7a4d, #0f5f3a);
         border: none;
         padding: 10px 20px;
         border-radius: 12px;
@@ -65,9 +65,9 @@
     }
     
     .btn-primary:hover {
-        background: linear-gradient(135deg, #1d4ed8, #1e3a8a);
+        background: linear-gradient(135deg, #0f5f3a, #1e3a8a);
         transform: translateY(-1px);
-        box-shadow: 0 4px 8px rgba(37,99,235,0.2);
+        box-shadow: 0 4px 8px rgba(31,122,77,0.2);
     }
     
     .btn-secondary {
@@ -98,8 +98,8 @@
     
     .btn-outline:hover {
         background: #f8fafc;
-        border-color: #2563eb;
-        color: #2563eb;
+        border-color: #1f7a4d;
+        color: #1f7a4d;
     }
     
     .btn-danger-sm {
@@ -181,7 +181,7 @@
     }
     
     .tab-btn.active {
-        color: #2563eb;
+        color: #1f7a4d;
     }
     
     .tab-btn.active::after {
@@ -191,7 +191,7 @@
         left: 0;
         right: 0;
         height: 2px;
-        background: #2563eb;
+        background: #1f7a4d;
     }
     
     .tab-content {
@@ -253,7 +253,7 @@
         font-family: monospace;
         font-size: 14px;
         font-weight: 600;
-        color: #2563eb;
+        color: #1f7a4d;
     }
     
     .badge-assigned {
@@ -277,8 +277,8 @@
     }
     
     .badge-active {
-        background: #dbeafe;
-        color: #1d4ed8;
+        background: #d4edda;
+        color: #0f5f3a;
         padding: 4px 10px;
         border-radius: 20px;
         font-size: 11px;
@@ -438,7 +438,7 @@
     
     .form-group label i {
         margin-right: 6px;
-        color: #2563eb;
+        color: #1f7a4d;
     }
     
     .form-group input,
@@ -457,8 +457,8 @@
     .form-group select:focus,
     .form-group textarea:focus {
         outline: none;
-        border-color: #2563eb;
-        box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+        border-color: #1f7a4d;
+        box-shadow: 0 0 0 3px rgba(31,122,77,0.1);
     }
     
     .modal-buttons {
@@ -553,7 +553,7 @@
         padding: 16px;
         border-radius: 16px;
         margin-top: 10px;
-        border-left: 4px solid #2563eb;
+        border-left: 4px solid #1f7a4d;
     }
     
     .tariff-title {
@@ -573,7 +573,7 @@
     
     .section-title i {
         margin-right: 8px;
-        color: #2563eb;
+        color: #1f7a4d;
     }
     
     .toast-notification {
@@ -620,6 +620,70 @@
             margin-left: 0;
         }
     }
+
+    /* ========== UNIVERSAL RESPONSIVE (Donezo theme) ========== */
+    @media (max-width: 1024px) {
+        .filter-row, .filters-grid {
+            grid-template-columns: 1fr 1fr !important;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start !important;
+        }
+        .page-header h1 {
+            font-size: 22px !important;
+        }
+        .filter-row, .filters-grid {
+            grid-template-columns: 1fr !important;
+        }
+        .modal-content {
+            width: 95% !important;
+            margin: 5% auto !important;
+        }
+        table {
+            font-size: 12px;
+        }
+        th, td {
+            padding: 8px !important;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .page-header h1 {
+            font-size: 20px !important;
+        }
+        .header-buttons, .header-actions {
+            flex-direction: column;
+            width: 100%;
+        }
+        .header-buttons .btn-primary,
+        .header-buttons .btn-secondary,
+        .header-actions .btn-primary,
+        .header-actions .btn-secondary {
+            width: 100%;
+            justify-content: center;
+        }
+        .modal-content {
+            border-radius: 16px !important;
+        }
+        .modal-buttons {
+            flex-direction: column;
+        }
+        .modal-buttons button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    @media (min-width: 1920px) {
+        .houses-main, .obiekt-main, .posts-container, .lids-container, .sim-cards-main {
+            max-width: 1700px !important;
+        }
+    }
+
 </style>
 
 <div class="sim-container">
