@@ -1,0 +1,1134 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Real Estate CRM - Карта объектов</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #0a0e27;
+            color: #e0e0e0;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #0f1235, #070a1f);
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo i {
+            font-size: 28px;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .logo h1 {
+            font-size: 22px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 18px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2563eb, #7c3aed);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.1);
+            color: #e0e0e0;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+        }
+
+        /* Main Container */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 70px);
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            background: #0f1235;
+            border-right: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .objects-list {
+            flex: 1;
+            padding: 15px;
+        }
+
+        .objects-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .objects-header h3 {
+            font-size: 16px;
+        }
+
+        .object-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
+
+        .object-item:hover {
+            background: rgba(255,255,255,0.1);
+            transform: translateX(5px);
+        }
+
+        .object-item.active {
+            border-color: #2563eb;
+            background: rgba(37,99,235,0.1);
+        }
+
+        .object-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .object-address {
+            font-size: 11px;
+            color: #8b9dc3;
+        }
+
+        .object-price {
+            font-size: 12px;
+            color: #10b981;
+            margin-top: 5px;
+        }
+
+        /* Map Container */
+        .map-container {
+            flex: 1;
+            position: relative;
+        }
+
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+
+        /* Detail Panel */
+        .detail-panel {
+            width: 450px;
+            background: #0f1235;
+            border-left: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+
+        .detail-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: #0f1235;
+        }
+
+        .detail-header h2 {
+            font-size: 18px;
+        }
+
+        .close-detail {
+            background: none;
+            border: none;
+            color: #8b9dc3;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .close-detail:hover {
+            color: #ef4444;
+        }
+
+        .detail-content {
+            padding: 20px;
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            gap: 5px;
+            margin-bottom: 20px;
+        }
+
+        .tab-btn {
+            padding: 10px 15px;
+            background: none;
+            border: none;
+            color: #8b9dc3;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .tab-btn.active {
+            color: #2563eb;
+            border-bottom: 2px solid #2563eb;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Blocks */
+        .blocks-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .block-item {
+            background: rgba(37,99,235,0.2);
+            border: 1px solid rgba(37,99,235,0.3);
+            border-radius: 10px;
+            padding: 8px 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .block-name {
+            font-weight: 600;
+        }
+
+        /* Pricing Table */
+        .pricing-table-container {
+            overflow-x: auto;
+            margin-bottom: 20px;
+        }
+
+        .pricing-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        .pricing-table th,
+        .pricing-table td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .pricing-table th {
+            background: rgba(37,99,235,0.2);
+            font-weight: 600;
+        }
+
+        .floor-cell {
+            background: rgba(255,255,255,0.05);
+            font-weight: 600;
+        }
+
+        /* Layouts Table */
+        .layouts-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .layouts-table th,
+        .layouts-table td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .layouts-table th {
+            background: rgba(37,99,235,0.2);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background: #0f1235;
+            margin: 3% auto;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            background: #0f1235;
+        }
+
+        .modal-header h2 {
+            font-size: 20px;
+        }
+
+        .close {
+            font-size: 28px;
+            cursor: pointer;
+            color: #8b9dc3;
+        }
+
+        .close:hover {
+            color: #ef4444;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            padding: 20px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            font-size: 12px;
+            color: #8b9dc3;
+            margin-bottom: 5px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 10px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            color: #e0e0e0;
+            font-size: 14px;
+        }
+
+        .modal-buttons {
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        .badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+        }
+
+        .badge-new { background: #10b981; color: white; }
+        .badge-progress { background: #f59e0b; color: white; }
+        .badge-done { background: #3b82f6; color: white; }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #8b9dc3;
+        }
+
+        .price-input {
+            width: 100%;
+            padding: 6px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 6px;
+            color: #e0e0e0;
+            font-size: 12px;
+        }
+
+        @media (max-width: 900px) {
+            .sidebar { width: 280px; }
+            .detail-panel { width: 350px; }
+        }
+
+        @media (max-width: 768px) {
+            .main-container { flex-direction: column; }
+            .sidebar { width: 100%; height: 300px; }
+            .map-container { height: 400px; }
+            .detail-panel { width: 100%; height: 400px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <i class="fas fa-building"></i>
+            <h1>Real Estate CRM</h1>
+        </div>
+        <div class="nav-buttons">
+            <button class="btn btn-primary" onclick="showAddObjectModal()">
+                <i class="fas fa-plus"></i> Добавить объект
+            </button>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <!-- Sidebar with objects list -->
+        <div class="sidebar">
+            <div class="objects-list">
+                <div class="objects-header">
+                    <h3><i class="fas fa-building"></i> Объекты</h3>
+                    <button class="btn btn-secondary" style="padding: 5px 12px;" onclick="loadObjects()">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+                <div id="objectsList"></div>
+            </div>
+        </div>
+
+        <!-- Map Container -->
+        <div class="map-container">
+            <div id="map"></div>
+        </div>
+
+        <!-- Detail Panel -->
+        <div class="detail-panel" id="detailPanel" style="display: none;">
+            <div class="detail-header">
+                <h2 id="detailTitle"><i class="fas fa-building"></i> Детали</h2>
+                <button class="close-detail" onclick="closeDetailPanel()">&times;</button>
+            </div>
+            <div class="detail-content">
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="blocks">Блоки</button>
+                    <button class="tab-btn" data-tab="pricing">Прайс-лист</button>
+                    <button class="tab-btn" data-tab="layouts">Планировки</button>
+                </div>
+                
+                <div id="tabBlocks" class="tab-content active">
+                    <div id="blocksContainer"></div>
+                </div>
+                
+                <div id="tabPricing" class="tab-content">
+                    <div id="pricingContainer"></div>
+                </div>
+                
+                <div id="tabLayouts" class="tab-content">
+                    <div id="layoutsContainer"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal for adding object -->
+    <div id="objectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-plus-circle"></i> Добавить объект</h2>
+                <span class="close" onclick="closeObjectModal()">&times;</span>
+            </div>
+            <form id="objectForm">
+                <div class="form-grid">
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-heading"></i> Название объекта *</label>
+                        <input type="text" id="objName" required placeholder="Пример: ЖК Парламент">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-tag"></i> Тип строительства</label>
+                        <select id="objConstructionType">
+                            <option value="новостройка">Новостройка</option>
+                            <option value="коробка">Коробка</option>
+                            <option value="котлован">Котлован</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-map-marker-alt"></i> Район</label>
+                        <select id="objDistrict">
+                            <option value="н.Сино">Сино</option>
+                            <option value="н.Шоҳмансур">Шоҳмансур</option>
+                            <option value="н.Фирдавси">Фирдавси</option>
+                            <option value="н.Сомони">Сомони</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label><i class="fas fa-location-dot"></i> Адрес *</label>
+                        <input type="text" id="objAddress" required placeholder="ул. Примерная, д.1">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-arrows-alt"></i> Площадь (м²)</label>
+                        <input type="number" id="objArea" step="0.01">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-door-open"></i> Комнаты</label>
+                        <input type="number" id="objRooms">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-window-maximize"></i> Окна</label>
+                        <input type="number" id="objWindows">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-layer-group"></i> Этаж</label>
+                        <input type="number" id="objFloor">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-building"></i> Этажность</label>
+                        <input type="number" id="objTotalFloors">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-chart-line"></i> Цена за м² (₽)</label>
+                        <input type="number" id="objPricePerM2" step="1000">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-credit-card"></i> Общая цена (₽)</label>
+                        <input type="number" id="objTotalPrice" step="10000">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-industry"></i> Застройщик</label>
+                        <input type="text" id="objDeveloper">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-phone"></i> Телефон</label>
+                        <input type="tel" id="objContactPhone">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-file-alt"></i> Техпаспорт</label>
+                        <select id="objTechPassport">
+                            <option value="нет">Нет</option>
+                            <option value="да">Да</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-tools"></i> Разрешение на ремонт</label>
+                        <select id="objRenovationPermit">
+                            <option value="нет">Нет</option>
+                            <option value="да">Да</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-map-pin"></i> Широта (lat)</label>
+                        <input type="text" id="objLat" placeholder="38.5598">
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-map-pin"></i> Долгота (lng)</label>
+                        <input type="text" id="ObjLng" placeholder="68.7870">
+                    </div>
+                </div>
+                <div class="modal-buttons">
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeObjectModal()">Отмена</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ============ ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ============
+        let map;
+        let markers = [];
+        let allObjects = [];
+        let currentObjectId = null;
+        let allBlocks = [];
+        let allPricing = [];
+        let allLayouts = [];
+
+        // ============ ИНИЦИАЛИЗАЦИЯ КАРТЫ ============
+        function initMap() {
+            map = L.map('map').setView([38.5598, 68.7870], 13);
+            
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> &copy; CartoDB',
+                subdomains: 'abcd',
+                maxZoom: 19
+            }).addTo(map);
+        }
+
+        // ============ ЗАГРУЗКА ОБЪЕКТОВ ============
+        async function loadObjects() {
+            try {
+                const response = await fetch('/api/realty/objects');
+                allObjects = await response.json();
+                renderObjectsList();
+                updateMapMarkers();
+            } catch(e) {
+                console.error('Error loading objects:', e);
+            }
+        }
+
+        function renderObjectsList() {
+            const container = document.getElementById('objectsList');
+            if (!allObjects.length) {
+                container.innerHTML = '<div class="empty-state">Нет объектов</div>';
+                return;
+            }
+            
+            container.innerHTML = allObjects.map(obj => `
+                <div class="object-item ${currentObjectId === obj.id ? 'active' : ''}" onclick="selectObject(${obj.id})">
+                    <div class="object-name">
+                        <span>${escapeHtml(obj.name)}</span>
+                        <button class="btn btn-secondary" style="padding:2px 8px;font-size:11px;" onclick="event.stopPropagation(); editObjectModal(${obj.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                    </div>
+                    <div class="object-address">${escapeHtml(obj.address || 'Адрес не указан')}</div>
+                    <div class="object-price">💰 ${formatPrice(obj.total_price || 0)} ₽</div>
+                </div>
+            `).join('');
+        }
+
+        function updateMapMarkers() {
+            // Очистка старых маркеров
+            markers.forEach(marker => map.removeLayer(marker));
+            markers = [];
+            
+            allObjects.forEach(obj => {
+                // Если есть координаты, используем их, иначе ставим по центру Душанбе
+                const lat = obj.lat || 38.5598 + (Math.random() * 0.05 - 0.025);
+                const lng = obj.lng || 68.7870 + (Math.random() * 0.05 - 0.025);
+                
+                const marker = L.marker([lat, lng]).addTo(map);
+                marker.bindPopup(`
+                    <div style="min-width: 200px;">
+                        <strong>${escapeHtml(obj.name)}</strong><br>
+                        <span style="color:#2563eb;">💰 ${formatPrice(obj.total_price || 0)} ₽</span><br>
+                        <button onclick="selectObject(${obj.id})" style="margin-top:8px;padding:5px 12px;background:#2563eb;color:white;border:none;border-radius:6px;cursor:pointer;">
+                            Открыть
+                        </button>
+                    </div>
+                `);
+                
+                marker.on('click', () => selectObject(obj.id));
+                markers.push(marker);
+            });
+        }
+
+        // ============ ВЫБОР ОБЪЕКТА ============
+        async function selectObject(id) {
+            currentObjectId = id;
+            renderObjectsList();
+            document.getElementById('detailPanel').style.display = 'flex';
+            
+            await Promise.all([
+                loadBlocks(),
+                loadPricing(),
+                loadLayouts()
+            ]);
+            
+            const obj = allObjects.find(o => o.id === id);
+            document.getElementById('detailTitle').innerHTML = `<i class="fas fa-building"></i> ${escapeHtml(obj.name)}`;
+        }
+
+        function closeDetailPanel() {
+            currentObjectId = null;
+            document.getElementById('detailPanel').style.display = 'none';
+            renderObjectsList();
+        }
+
+        // ============ УПРАВЛЕНИЕ БЛОКАМИ ============
+        async function loadBlocks() {
+            if (!currentObjectId) return;
+            const response = await fetch(`/api/realty/objects/${currentObjectId}/blocks`);
+            allBlocks = await response.json();
+            renderBlocks();
+        }
+
+        function renderBlocks() {
+            const container = document.getElementById('blocksContainer');
+            container.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h4>Блоки</h4>
+                    <button class="btn btn-primary btn-sm" onclick="showAddBlockModal()" style="padding:5px 12px;">
+                        <i class="fas fa-plus"></i> Добавить блок
+                    </button>
+                </div>
+                <div class="blocks-grid">
+                    ${allBlocks.length === 0 ? '<div class="empty-state">Нет блоков</div>' : 
+                        allBlocks.map(block => `
+                            <div class="block-item">
+                                <span class="block-name">${escapeHtml(block.name)}</span>
+                                <button class="btn btn-secondary" style="padding:2px 8px;font-size:11px;" onclick="deleteBlock(${block.id})">
+                                    <i class="fas fa-trash-alt"></i>
+                                </button>
+                            </div>
+                        `).join('')
+                    }
+                </div>
+            `;
+        }
+
+        async function showAddBlockModal() {
+            const name = prompt('Введите название блока (например: Р, О, М, Л):');
+            if (!name) return;
+            
+            const response = await fetch('/api/realty/blocks', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ object_id: currentObjectId, name: name })
+            });
+            
+            if (response.ok) {
+                await loadBlocks();
+            } else {
+                alert('Ошибка при добавлении блока');
+            }
+        }
+
+        async function deleteBlock(id) {
+            if (!confirm('Удалить блок?')) return;
+            await fetch(`/api/realty/blocks/${id}`, { method: 'DELETE' });
+            await loadBlocks();
+            await loadPricing();
+        }
+
+        // ============ ПРАЙС-ЛИСТ ============
+        async function loadPricing() {
+            if (!currentObjectId) return;
+            const response = await fetch(`/api/realty/pricing?object_id=${currentObjectId}`);
+            allPricing = await response.json();
+            renderPricing();
+        }
+
+        function renderPricing() {
+            const container = document.getElementById('pricingContainer');
+            
+            // Группировка по блокам и этажам
+            const floors = [-2, -1, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20];
+            const percents = [30, 50, 80, 100];
+            
+            container.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h4>Прайс-лист</h4>
+                    <button class="btn btn-primary btn-sm" onclick="showAddPricingModal()" style="padding:5px 12px;">
+                        <i class="fas fa-plus"></i> Добавить цену
+                    </button>
+                </div>
+                <div class="pricing-table-container">
+                    <table class="pricing-table">
+                        <thead>
+                            <tr><th>Блок / Этаж</th>${percents.map(p => `<th>${p}%</th>`).join('')}</tr>
+                        </thead>
+                        <tbody id="pricingTableBody"></tbody>
+                    </table>
+                </div>
+            `;
+            
+            const tbody = document.getElementById('pricingTableBody');
+            let bodyHtml = '';
+            
+            // Группируем цены по блокам
+            const blocksMap = {};
+            allBlocks.forEach(block => { blocksMap[block.id] = block; });
+            
+            // Для каждого блока создаем строки по этажам
+            for (let block of allBlocks) {
+                const blockPricing = allPricing.filter(p => p.block_id === block.id);
+                
+                // Создаем карту цен по этажам
+                const priceMap = {};
+                blockPricing.forEach(p => {
+                    const floorKey = p.floor_range_end ? `${p.floor_number}-${p.floor_range_end}` : p.floor_number;
+                    priceMap[floorKey] = priceMap[floorKey] || {};
+                    priceMap[floorKey][p.percent_value] = { usd: p.price_usd, tjs: p.price_tjs };
+                });
+                
+                const floorsForBlock = [...floors];
+                floorsForBlock.forEach(floor => {
+                    const floorKey = floor.toString();
+                    const prices = priceMap[floorKey] || {};
+                    bodyHtml += `
+                        <tr><td class="floor-cell">${block.name} / ${floor}</td>
+                        ${percents.map(p => `
+                            <td>
+                                ${prices[p] ? 
+                                    `<div>💵 $${formatPrice(prices[p].usd)}</div>
+                                     <div style="font-size:10px;">🇹🇯 ${formatPrice(prices[p].tjs)}</div>` : 
+                                    '<span style="color:#5b6e8c;">-</span>'}
+                            </td>
+                        `).join('')}
+                    </tr>
+                    `;
+                });
+            }
+            
+            tbody.innerHTML = bodyHtml || '<tr><td colspan="5" class="empty-state">Нет цен</td></tr>';
+        }
+
+        async function showAddPricingModal() {
+            const blockId = prompt('Введите ID блока (посмотрите в консоли или введите 1):');
+            const floorStart = prompt('Введите этаж (от):');
+            const floorEnd = prompt('Введите этаж (до) - оставьте пустым для одного этажа:');
+            const percent = prompt('Введите процент (30, 50, 80, 100):');
+            const priceUSD = prompt('Введите цену в USD:');
+            const priceTJS = prompt('Введите цену в TJS:');
+            
+            if (!blockId || !floorStart || !percent) return;
+            
+            const data = {
+                object_id: currentObjectId,
+                block_id: parseInt(blockId),
+                floor_number: parseInt(floorStart),
+                floor_range_end: floorEnd ? parseInt(floorEnd) : null,
+                percent_value: parseInt(percent),
+                price_usd: parseFloat(priceUSD) || 0,
+                price_tjs: parseFloat(priceTJS) || 0,
+                currency: 'USD'
+            };
+            
+            const response = await fetch('/api/realty/pricing', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                await loadPricing();
+            } else {
+                alert('Ошибка при добавлении цены');
+            }
+        }
+
+        // ============ ПЛАНИРОВКИ ============
+        async function loadLayouts() {
+            if (!currentObjectId) return;
+            const response = await fetch(`/api/realty/layouts?object_id=${currentObjectId}`);
+            allLayouts = await response.json();
+            renderLayouts();
+        }
+
+        function renderLayouts() {
+            const container = document.getElementById('layoutsContainer');
+            container.innerHTML = `
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                    <h4>Планировки квартир</h4>
+                    <button class="btn btn-primary btn-sm" onclick="showAddLayoutModal()" style="padding:5px 12px;">
+                        <i class="fas fa-plus"></i> Добавить планировку
+                    </button>
+                </div>
+                <div class="pricing-table-container">
+                    <table class="layouts-table">
+                        <thead>
+                            <tr><th>Тип</th><th>Окна</th><th>Площадь (м²)</th><th>Цена (USD)</th><th>Цена (TJS)</th><th>Действия</th></tr>
+                        </thead>
+                        <tbody>
+                            ${allLayouts.length === 0 ? '<tr><td colspan="6" class="empty-state">Нет планировок</td></tr>' :
+                                allLayouts.map(layout => `
+                                    <tr>
+                                        <td>${escapeHtml(layout.room_type)}</td>
+                                        <td>${layout.windows_count}</td>
+                                        <td>${layout.area} м²</td>
+                                        <td>$${formatPrice(layout.price_usd)}</td>
+                                        <td>${formatPrice(layout.price_tjs)} TJS</td>
+                                        <td>
+                                            <button class="btn btn-danger btn-sm" onclick="deleteLayout(${layout.id})" style="padding:2px 8px;">
+                                                <i class="fas fa-trash-alt"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `).join('')
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            `;
+        }
+
+        async function showAddLayoutModal() {
+            const roomType = prompt('Тип квартиры (1-комнатная, 2-комнатная, 3-комнатная):');
+            const windows = prompt('Количество окон:');
+            const area = prompt('Площадь (м²):');
+            const priceUSD = prompt('Цена в USD:');
+            const priceTJS = prompt('Цена в TJS:');
+            
+            if (!roomType || !windows || !area) return;
+            
+            const data = {
+                object_id: currentObjectId,
+                room_type: roomType,
+                windows_count: parseInt(windows),
+                area: parseFloat(area),
+                price_usd: parseFloat(priceUSD) || 0,
+                price_tjs: parseFloat(priceTJS) || 0
+            };
+            
+            const response = await fetch('/api/realty/layouts', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                await loadLayouts();
+            } else {
+                alert('Ошибка при добавлении планировки');
+            }
+        }
+
+        async function deleteLayout(id) {
+            if (!confirm('Удалить планировку?')) return;
+            await fetch(`/api/realty/layouts/${id}`, { method: 'DELETE' });
+            await loadLayouts();
+        }
+
+        // ============ ОБЪЕКТЫ (CRUD) ============
+        async function showAddObjectModal() {
+            document.getElementById('objectForm').reset();
+            document.getElementById('objLat').value = '38.5598';
+            document.getElementById('ObjLng').value = '68.7870';
+            document.getElementById('objectModal').style.display = 'block';
+        }
+
+        function closeObjectModal() {
+            document.getElementById('objectModal').style.display = 'none';
+        }
+
+        async function editObjectModal(id) {
+            const obj = allObjects.find(o => o.id === id);
+            if (!obj) return;
+            
+            document.getElementById('objName').value = obj.name;
+            document.getElementById('objConstructionType').value = obj.construction_type || 'новостройка';
+            document.getElementById('objDistrict').value = obj.district || 'н.Сино';
+            document.getElementById('objAddress').value = obj.address || '';
+            document.getElementById('objArea').value = obj.area || '';
+            document.getElementById('objRooms').value = obj.rooms || '';
+            document.getElementById('objWindows').value = obj.windows || '';
+            document.getElementById('objFloor').value = obj.floor || '';
+            document.getElementById('objTotalFloors').value = obj.total_floors || '';
+            document.getElementById('objPricePerM2').value = obj.price_per_m2 || '';
+            document.getElementById('objTotalPrice').value = obj.total_price || '';
+            document.getElementById('objDeveloper').value = obj.developer || '';
+            document.getElementById('objContactPhone').value = obj.contact_phone || '';
+            document.getElementById('objTechPassport').value = obj.has_tech_passport || 'нет';
+            document.getElementById('objRenovationPermit').value = obj.has_renovation_permit || 'нет';
+            document.getElementById('objLat').value = obj.lat || '38.5598';
+            document.getElementById('ObjLng').value = obj.lng || '68.7870';
+            
+            document.getElementById('objectModal').style.display = 'block';
+            
+            // Изменяем поведение формы для обновления
+            const form = document.getElementById('objectForm');
+            form.onsubmit = async (e) => {
+                e.preventDefault();
+                await updateObject(id);
+            };
+        }
+
+        document.getElementById('objectForm').onsubmit = async (e) => {
+            e.preventDefault();
+            await addObject();
+        };
+
+        async function addObject() {
+            const data = {
+                name: document.getElementById('objName').value,
+                construction_type: document.getElementById('objConstructionType').value,
+                district: document.getElementById('objDistrict').value,
+                address: document.getElementById('objAddress').value,
+                area: parseFloat(document.getElementById('objArea').value) || 0,
+                rooms: parseInt(document.getElementById('objRooms').value) || 0,
+                windows: parseInt(document.getElementById('objWindows').value) || 0,
+                floor: parseInt(document.getElementById('objFloor').value) || 0,
+                total_floors: parseInt(document.getElementById('objTotalFloors').value) || 0,
+                price_per_m2: parseFloat(document.getElementById('objPricePerM2').value) || 0,
+                total_price: parseFloat(document.getElementById('objTotalPrice').value) || 0,
+                developer: document.getElementById('objDeveloper').value,
+                contact_phone: document.getElementById('objContactPhone').value,
+                has_tech_passport: document.getElementById('objTechPassport').value,
+                has_renovation_permit: document.getElementById('objRenovationPermit').value,
+                lat: parseFloat(document.getElementById('objLat').value) || 38.5598,
+                lng: parseFloat(document.getElementById('ObjLng').value) || 68.7870
+            };
+            
+            const response = await fetch('/api/realty/objects', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                closeObjectModal();
+                await loadObjects();
+                alert('Объект добавлен!');
+            } else {
+                alert('Ошибка при добавлении');
+            }
+        }
+
+        async function updateObject(id) {
+            const data = {
+                name: document.getElementById('objName').value,
+                construction_type: document.getElementById('objConstructionType').value,
+                district: document.getElementById('objDistrict').value,
+                address: document.getElementById('objAddress').value,
+                area: parseFloat(document.getElementById('objArea').value) || 0,
+                rooms: parseInt(document.getElementById('objRooms').value) || 0,
+                windows: parseInt(document.getElementById('objWindows').value) || 0,
+                floor: parseInt(document.getElementById('objFloor').value) || 0,
+                total_floors: parseInt(document.getElementById('objTotalFloors').value) || 0,
+                price_per_m2: parseFloat(document.getElementById('objPricePerM2').value) || 0,
+                total_price: parseFloat(document.getElementById('objTotalPrice').value) || 0,
+                developer: document.getElementById('objDeveloper').value,
+                contact_phone: document.getElementById('objContactPhone').value,
+                has_tech_passport: document.getElementById('objTechPassport').value,
+                has_renovation_permit: document.getElementById('objRenovationPermit').value,
+                lat: parseFloat(document.getElementById('objLat').value) || 38.5598,
+                lng: parseFloat(document.getElementById('ObjLng').value) || 68.7870
+            };
+            
+            const response = await fetch(`/api/realty/objects/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            
+            if (response.ok) {
+                closeObjectModal();
+                await loadObjects();
+                if (currentObjectId === id) await selectObject(id);
+                alert('Объект обновлен!');
+            } else {
+                alert('Ошибка при обновлении');
+            }
+        }
+
+        // ============ ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ============
+        function formatPrice(price) {
+            if (!price) return '0';
+            return new Intl.NumberFormat('ru-RU').format(price);
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return String(str).replace(/[&<>]/g, function(m) {
+                if (m === '&') return '&amp;';
+                if (m === '<') return '&lt;';
+                if (m === '>') return '&gt;';
+                return m;
+            });
+        }
+
+        // Tab switching
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tabName = btn.dataset.tab;
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                document.getElementById(`tab${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).classList.add('active');
+            });
+        });
+
+        // Закрытие модального окна при клике вне его
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        };
+
+        // Инициализация
+        initMap();
+        loadObjects();
+    </script>
+</body>
+</html>

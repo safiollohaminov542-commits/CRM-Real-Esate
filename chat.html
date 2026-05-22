@@ -1,0 +1,499 @@
+{% extends "base.html" %}
+{% block title %}Чат{% endblock %}
+
+{% block content %}
+<style>
+    .chat-wrapper {
+        background: white;
+        border-radius: 24px;
+        border: 1px solid #eef2f6;
+        overflow: hidden;
+        height: calc(100vh - 160px);
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .chat-header {
+        padding: 20px 24px;
+        border-bottom: 1px solid #eef2f6;
+        background: white;
+    }
+    
+    .chat-header h1 {
+        font-size: 20px;
+        margin-bottom: 4px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+    
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 20px 24px;
+        background: #f8fafc;
+    }
+    
+    .message-item {
+        margin-bottom: 20px;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .message-own {
+        align-items: flex-end;
+    }
+    
+    .message-other {
+        align-items: flex-start;
+    }
+    
+    .message-bubble {
+        max-width: 70%;
+        padding: 12px 16px;
+        border-radius: 20px;
+        position: relative;
+        word-wrap: break-word;
+    }
+    
+    .message-own .message-bubble {
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        color: white;
+        border-bottom-right-radius: 4px;
+    }
+    
+    .message-other .message-bubble {
+        background: white;
+        color: #1a1a2e;
+        border: 1px solid #eef2f6;
+        border-bottom-left-radius: 4px;
+        box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    
+    .message-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 6px;
+        font-size: 11px;
+        gap: 12px;
+    }
+    
+    .message-own .message-header {
+        color: rgba(255,255,255,0.7);
+    }
+    
+    .message-other .message-header {
+        color: #8b9dc3;
+    }
+    
+    .message-text {
+        font-size: 14px;
+        line-height: 1.4;
+    }
+    
+    .message-media {
+        margin-top: 8px;
+        max-width: 100%;
+        border-radius: 12px;
+    }
+    
+    .message-media img {
+        max-width: 100%;
+        border-radius: 12px;
+        max-height: 250px;
+        cursor: pointer;
+    }
+    
+    .message-media video {
+        max-width: 100%;
+        border-radius: 12px;
+        max-height: 250px;
+    }
+    
+    .message-file {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        background: rgba(0,0,0,0.05);
+        border-radius: 12px;
+        text-decoration: none;
+        font-size: 13px;
+    }
+    
+    .message-own .message-file {
+        background: rgba(255,255,255,0.2);
+        color: white;
+    }
+    
+    .message-other .message-file {
+        color: #2563eb;
+    }
+    
+    .message-actions {
+        margin-top: 4px;
+        display: flex;
+        gap: 8px;
+        font-size: 11px;
+    }
+    
+    .message-actions button {
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        font-size: 11px;
+        padding: 2px 6px;
+        border-radius: 6px;
+        transition: all 0.2s;
+    }
+    
+    .message-own .message-actions button { color: rgba(255,255,255,0.6); }
+    .message-other .message-actions button { color: #8b9dc3; }
+    .message-actions button:hover { background: rgba(0,0,0,0.1); }
+    
+    .chat-input-area {
+        padding: 16px 24px;
+        border-top: 1px solid #eef2f6;
+        background: white;
+    }
+    
+    .chat-form {
+        display: flex;
+        gap: 12px;
+        align-items: flex-end;
+    }
+    
+    .chat-input {
+        flex: 1;
+        padding: 12px 16px;
+        background: #f8fafc;
+        border: 1px solid #e1e4e8;
+        border-radius: 24px;
+        font-size: 14px;
+        resize: none;
+        font-family: inherit;
+        transition: all 0.2s;
+    }
+    
+    .chat-input:focus {
+        outline: none;
+        border-color: #2563eb;
+        box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+    }
+    
+    .file-label {
+        background: #f8fafc;
+        border: 1px solid #e1e4e8;
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #5b6e8c;
+    }
+    
+    .file-label:hover {
+        background: #eef2f6;
+        color: #2563eb;
+    }
+    
+    .btn-send {
+        background: linear-gradient(135deg, #2563eb, #7c3aed);
+        border: none;
+        border-radius: 24px;
+        padding: 12px 28px;
+        color: white;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    
+    .btn-send:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 12px rgba(37,99,235,0.3);
+    }
+    
+    .selected-file-info {
+        font-size: 12px;
+        color: #8b9dc3;
+        margin-top: 8px;
+        padding: 8px 12px;
+        background: #f8fafc;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .edit-message-input {
+        width: 100%;
+        padding: 8px;
+        background: rgba(0,0,0,0.05);
+        border: none;
+        border-radius: 12px;
+        font-family: inherit;
+        font-size: 14px;
+        resize: vertical;
+    }
+    
+    .loading {
+        text-align: center;
+        padding: 40px;
+        color: #8b9dc3;
+    }
+    
+    .empty-chat {
+        text-align: center;
+        padding: 60px;
+        color: #8b9dc3;
+    }
+    
+    .message-time {
+        font-size: 10px;
+    }
+    
+    @media (max-width: 768px) {
+        .message-bubble {
+            max-width: 85%;
+        }
+        .btn-send {
+            padding: 12px 16px;
+        }
+    }
+</style>
+
+<div class="chat-wrapper">
+    <div class="chat-header">
+        <h1><i class="fas fa-comments"></i> Общий чат</h1>
+        <p style="font-size: 13px; margin-top: 4px;">Обсуждение рабочих вопросов</p>
+    </div>
+    
+    <div class="chat-messages" id="chatMessages">
+        <div class="loading"><i class="fas fa-spinner fa-spin"></i> Загрузка сообщений...</div>
+    </div>
+    
+    <div class="chat-input-area">
+        <form id="chatForm" class="chat-form" enctype="multipart/form-data">
+            <textarea id="messageInput" class="chat-input" rows="1" placeholder="Введите сообщение..."></textarea>
+            <label class="file-label">
+                <i class="fas fa-paperclip"></i>
+                <input type="file" id="chatFile" style="display:none;" onchange="showSelectedFile()">
+            </label>
+            <button type="submit" class="btn-send"><i class="fas fa-paper-plane"></i></button>
+        </form>
+        <div id="selectedFileInfo" class="selected-file-info" style="display: none;"></div>
+    </div>
+</div>
+
+<script>
+let messageCheckInterval;
+let editMode = false;
+let editMessageId = null;
+
+function showSelectedFile() {
+    const file = document.getElementById('chatFile').files[0];
+    if (file) {
+        const sizeKB = (file.size / 1024).toFixed(2);
+        const sizeMB = (file.size / (1024 * 1024)).toFixed(2);
+        const sizeText = file.size > 1024 * 1024 ? `${sizeMB} MB` : `${sizeKB} KB`;
+        document.getElementById('selectedFileInfo').innerHTML = `<i class="fas fa-file"></i> ${file.name} (${sizeText}) <i class="fas fa-times" style="margin-left:8px;cursor:pointer;" onclick="clearSelectedFile()"></i>`;
+        document.getElementById('selectedFileInfo').style.display = 'block';
+    }
+}
+
+function clearSelectedFile() {
+    document.getElementById('chatFile').value = '';
+    document.getElementById('selectedFileInfo').style.display = 'none';
+    document.getElementById('selectedFileInfo').innerHTML = '';
+}
+
+async function loadMessages() {
+    try {
+        const response = await fetch('/api/messages');
+        if (!response.ok) {
+            console.error('Ошибка загрузки сообщений:', response.status);
+            return;
+        }
+        const messages = await response.json();
+        
+        const container = document.getElementById('chatMessages');
+        if (!messages || messages.length === 0) {
+            container.innerHTML = '<div class="empty-chat"><i class="fas fa-comment-dots" style="font-size:48px;margin-bottom:16px;display:block;"></i> Нет сообщений. Напишите первое!</div>';
+            return;
+        }
+        
+        const currentUserId = {{ session.user_id }};
+        
+        container.innerHTML = messages.reverse().map(msg => `
+            <div class="message-item ${msg.user_id === currentUserId ? 'message-own' : 'message-other'}" data-message-id="${msg.id}">
+                <div class="message-bubble">
+                    <div class="message-header">
+                        <strong><i class="fas fa-user-circle"></i> ${escapeHtml(msg.user_name)}</strong>
+                        <span class="message-time">${new Date(msg.created_date).toLocaleString('ru-RU')}</span>
+                    </div>
+                    <div class="message-text" id="message-text-${msg.id}">${escapeHtml(msg.message || '')}</div>
+                    ${msg.file_path ? `
+                        <div class="message-media">
+                            ${msg.file_type === 'image' ? 
+                                `<img src="${msg.file_path}" onclick="window.open(this.src)" style="cursor:pointer;" loading="lazy" onerror="this.style.display='none'">` : 
+                                msg.file_type === 'video' ?
+                                `<video src="${msg.file_path}" controls preload="metadata" onerror="this.style.display='none'"></video>` :
+                                `<a href="${msg.file_path}" class="message-file" download target="_blank"><i class="fas fa-download"></i> ${escapeHtml(msg.file_name || 'Файл')}</a>`
+                            }
+                        </div>
+                    ` : ''}
+                </div>
+                ${msg.user_id === currentUserId ? `
+                    <div class="message-actions">
+                        <button onclick="editMessage(${msg.id}, '${escapeHtml(msg.message || '').replace(/'/g, "\\'").replace(/\n/g, '\\n')}')"><i class="fas fa-edit"></i> Редактировать</button>
+                        <button onclick="deleteMessage(${msg.id})"><i class="fas fa-trash-alt"></i> Удалить</button>
+                    </div>
+                ` : ''}
+            </div>
+        `).join('');
+        
+        // Scroll to bottom
+        container.scrollTop = container.scrollHeight;
+    } catch (err) {
+        console.error('Ошибка загрузки сообщений:', err);
+        document.getElementById('chatMessages').innerHTML = '<div class="loading"><i class="fas fa-exclamation-triangle"></i> Ошибка загрузки сообщений</div>';
+    }
+}
+
+function editMessage(id, oldText) {
+    editMode = true;
+    editMessageId = id;
+    const messageDiv = document.getElementById(`message-text-${id}`);
+    const originalHtml = messageDiv.innerHTML;
+    messageDiv.innerHTML = `<textarea class="edit-message-input" id="edit-input-${id}" rows="2">${oldText}</textarea>
+                            <div style="margin-top: 8px; display: flex; gap: 8px;">
+                                <button onclick="saveEditMessage(${id})" style="padding:4px 12px;background:#2563eb;color:white;border:none;border-radius:8px;cursor:pointer;">Сохранить</button>
+                                <button onclick="cancelEditMessage(${id}, '${originalHtml.replace(/'/g, "\\'")}')" style="padding:4px 12px;background:#e2e8f0;border:none;border-radius:8px;cursor:pointer;">Отмена</button>
+                            </div>`;
+}
+
+async function saveEditMessage(id) {
+    const newText = document.getElementById(`edit-input-${id}`).value;
+    if (!newText.trim() && newText !== '') {
+        alert('Сообщение не может быть пустым');
+        return;
+    }
+    
+    try {
+        const response = await fetch(`/api/messages/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ message: newText })
+        });
+        
+        if (response.ok) {
+            editMode = false;
+            editMessageId = null;
+            await loadMessages();
+        } else {
+            const error = await response.json();
+            alert('Ошибка при редактировании: ' + (error.error || 'Неизвестная ошибка'));
+        }
+    } catch (err) {
+        alert('Ошибка: ' + err.message);
+    }
+}
+
+function cancelEditMessage(id, originalText) {
+    document.getElementById(`message-text-${id}`).innerHTML = originalText;
+    editMode = false;
+    editMessageId = null;
+}
+
+async function deleteMessage(id) {
+    if (confirm('Удалить сообщение?')) {
+        try {
+            const response = await fetch(`/api/messages/${id}`, { method: 'DELETE' });
+            if (response.ok) {
+                await loadMessages();
+            } else {
+                const error = await response.json();
+                alert('Ошибка при удалении: ' + (error.error || 'Неизвестная ошибка'));
+            }
+        } catch (err) {
+            alert('Ошибка: ' + err.message);
+        }
+    }
+}
+
+document.getElementById('chatForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    if (editMode) {
+        alert('Сначала завершите редактирование');
+        return;
+    }
+    
+    const message = document.getElementById('messageInput').value;
+    const formData = new FormData();
+    
+    if (message.trim()) {
+        formData.append('message', message);
+    }
+    
+    const file = document.getElementById('chatFile').files[0];
+    if (file) {
+        formData.append('file', file);
+    }
+    
+    if (!message.trim() && !file) {
+        return;
+    }
+    
+    try {
+        const response = await fetch('/api/messages', {
+            method: 'POST',
+            body: formData
+        });
+        
+        if (response.ok) {
+            document.getElementById('messageInput').value = '';
+            document.getElementById('chatFile').value = '';
+            document.getElementById('selectedFileInfo').style.display = 'none';
+            document.getElementById('selectedFileInfo').innerHTML = '';
+            await loadMessages();
+            // Auto-resize textarea
+            document.getElementById('messageInput').style.height = 'auto';
+        } else {
+            const error = await response.json();
+            alert('Ошибка отправки: ' + (error.error || 'Неизвестная ошибка'));
+        }
+    } catch (err) {
+        alert('Ошибка: ' + err.message);
+    }
+});
+
+// Auto-resize textarea
+document.getElementById('messageInput').addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+});
+
+// Send on Enter (but not with Shift+Enter)
+document.getElementById('messageInput').addEventListener('keypress', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        document.getElementById('chatForm').dispatchEvent(new Event('submit'));
+    }
+});
+
+// Load messages on page load
+loadMessages();
+
+// Auto-refresh every 3 seconds
+messageCheckInterval = setInterval(loadMessages, 3000);
+
+window.addEventListener('beforeunload', () => {
+    if (messageCheckInterval) clearInterval(messageCheckInterval);
+});
+</script>
+{% endblock %}
