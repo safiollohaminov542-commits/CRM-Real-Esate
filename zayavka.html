@@ -3,7 +3,7 @@
 
 {% block content %}
 <style>
-    /* ==================== ROOT VARIABLES ==================== */
+    /* ==================== ROOT VARIABLES (LIGHT THEME) ==================== */
     :root {
         --bg-primary: #f5f7fa;
         --bg-secondary: #ffffff;
@@ -30,6 +30,32 @@
         --radius-lg: 14px;
         --radius-xl: 18px;
     }
+
+    /* ==================== DARK THEME ==================== */
+    body.theme-dark, html.theme-dark, .theme-dark .kanban-wrapper {
+        --bg-primary: #0f1623;
+        --bg-secondary: #1a2332;
+        --bg-tertiary: #243042;
+        --bg-card: #1e2939;
+        --bg-column: #182030;
+        --border-color: #2d3a4f;
+        --border-light: #243042;
+        --text-primary: #e6edf5;
+        --text-secondary: #a8b3c5;
+        --text-tertiary: #6b7a92;
+        --accent-blue: #2ea16a;
+        --accent-purple: #a78bfa;
+        --accent-green: #34d399;
+        --accent-red: #f87171;
+        --accent-orange: #fbbf24;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+        --shadow-md: 0 2px 6px -1px rgba(0, 0, 0, 0.5);
+        --shadow-lg: 0 4px 14px -2px rgba(0, 0, 0, 0.55);
+        --shadow-xl: 0 8px 28px -4px rgba(0, 0, 0, 0.6);
+    }
+
+    body.theme-dark { background: #0f1623; }
+    body.theme-dark .kanban-wrapper { background: var(--bg-primary); }
 
     * {
         margin: 0;
@@ -112,28 +138,32 @@
     /* ==================== FILTERS ==================== */
     .filters-bar {
         background: var(--bg-secondary);
-        padding: 8px 20px;
+        padding: 10px 20px;
         border-bottom: 1px solid var(--border-color);
         display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        align-items: center;
+        gap: 12px;
+        align-items: flex-start;
+        justify-content: space-between;
         z-index: 15;
-        overflow-x: auto;
+        flex-wrap: wrap;
     }
 
+    /* Чап: 4 филтри асосӣ - як андоза, таг ба таг */
     .filters-left {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        align-items: center;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(220px, 1fr));
+        gap: 6px;
         flex: 1;
+        min-width: 460px;
+        max-width: 560px;
     }
 
+    /* Рост: ҳамаи дигар филтрҳо + reset - як андоза, таг ба таг */
     .filters-right {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
+        display: grid;
+        grid-template-columns: repeat(3, 160px);
+        grid-template-rows: auto auto;
+        gap: 6px;
         align-items: center;
     }
 
@@ -142,19 +172,26 @@
         align-items: center;
         gap: 6px;
         background: var(--bg-tertiary);
-        padding: 6px 12px;
+        padding: 7px 10px;
         border-radius: var(--radius-md);
         border: 1px solid var(--border-color);
+        height: 36px;
+        box-sizing: border-box;
     }
 
+    /* Филтрҳои асосӣ - дизайни ягона */
     .filter-group.primary {
         border-color: var(--accent-blue);
-        background: rgba(59, 130, 246, 0.05);
+        background: rgba(31, 122, 77, 0.06);
+        width: 100%;
+        height: 36px;
+        box-sizing: border-box;
     }
 
     .filter-group i {
         color: var(--accent-blue);
         font-size: 12px;
+        flex-shrink: 0;
     }
 
     .filter-group input, .filter-group select {
@@ -164,10 +201,15 @@
         padding: 4px 0;
         font-size: 12px;
         outline: none;
+        min-width: 0;
     }
 
-    .filter-group.primary input, .filter-group.primary select {
-        font-size: 13px;
+    /* Дар филтрҳои primary - ҳамаи input-ҳо як андоза */
+    .filter-group.primary input {
+        flex: 1;
+        min-width: 0;
+        text-align: center;
+        font-size: 12px;
         font-weight: 500;
     }
 
@@ -176,6 +218,106 @@
         font-weight: 600;
         color: var(--accent-blue);
         white-space: nowrap;
+        min-width: 48px;
+    }
+
+    .filter-divider {
+        color: var(--text-tertiary);
+        font-size: 11px;
+        flex-shrink: 0;
+    }
+
+    .filter-currency {
+        font-size: 10px;
+        color: var(--text-tertiary);
+        flex-shrink: 0;
+        margin-left: 2px;
+    }
+
+    /* Филтрҳои тарафи рост - ҳама як андоза */
+    .filters-right .filter-group {
+        width: 100%;
+        height: 36px;
+    }
+
+    .filters-right .filter-group input,
+    .filters-right .filter-group select {
+        flex: 1;
+        width: 100%;
+    }
+
+    /* Тугмаи reset - дар тарафи рост */
+    .reset-filter-btn {
+        height: 36px;
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        color: var(--text-secondary);
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: var(--transition);
+        width: 100%;
+    }
+
+    .reset-filter-btn:hover {
+        background: var(--accent-red);
+        color: white;
+        border-color: var(--accent-red);
+    }
+
+    /* ==================== SELECT DROPDOWN STYLING (сабзу сафед) ==================== */
+    .filter-group select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%231f7a4d' d='M5 7L1 3h8z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 4px center;
+        padding-right: 16px;
+        cursor: pointer;
+    }
+
+    body.theme-dark .filter-group select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%2334d399' d='M5 7L1 3h8z'/%3E%3C/svg%3E");
+    }
+
+    /* Стилизатсияи option-ҳои dropdown */
+    .filter-group select option,
+    .form-group select option {
+        background: var(--bg-secondary);
+        color: var(--text-primary);
+        padding: 10px 12px;
+        font-size: 13px;
+        border: none;
+    }
+
+    .filter-group select option:hover,
+    .filter-group select option:checked,
+    .form-group select option:hover,
+    .form-group select option:checked {
+        background: var(--accent-blue) !important;
+        color: white !important;
+    }
+
+    /* ==================== РЕСПОНСИВ - ФИЛТРҲО ==================== */
+    @media (max-width: 1280px) {
+        .filters-bar { flex-direction: column; }
+        .filters-left, .filters-right {
+            grid-template-columns: repeat(2, 1fr);
+            min-width: 0;
+            max-width: 100%;
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .filters-left, .filters-right {
+            grid-template-columns: 1fr;
+        }
     }
 
     /* ==================== KANBAN MAIN ==================== */
@@ -281,9 +423,11 @@
     /* Cards Container */
     .cards-container {
         padding: 10px;
+        padding-bottom: 60px; /* Барои фазои бо панели поёнӣ - кадри охирин пурра нишон диҳад */
         flex: 1;
         overflow-y: auto;
         min-height: 100px;
+        scrollbar-gutter: stable;
     }
 
     .cards-container::-webkit-scrollbar {
@@ -544,15 +688,19 @@
         top: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.4);
-        backdrop-filter: blur(3px);
+        background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(4px);
         align-items: center;
         justify-content: center;
     }
 
+    .modal.show {
+        display: flex !important;
+    }
+
     .modal-content {
         background: var(--bg-secondary);
-        margin: auto;
+        margin: 0 auto;
         border-radius: var(--radius-xl);
         width: 90%;
         max-width: 700px;
@@ -560,7 +708,8 @@
         overflow-y: auto;
         box-shadow: var(--shadow-xl);
         border: 1px solid var(--border-color);
-        animation: modalSlideIn 0.2s ease;
+        animation: modalSlideIn 0.25s ease;
+        position: relative;
     }
 
     .modal-large {
@@ -568,8 +717,8 @@
     }
 
     @keyframes modalSlideIn {
-        from { opacity: 0; transform: scale(0.98); }
-        to { opacity: 1; transform: scale(1); }
+        from { opacity: 0; transform: translateY(-20px) scale(0.96); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     .modal-header {
@@ -641,6 +790,22 @@
     .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
         outline: none;
         border-color: var(--accent-blue);
+    }
+
+    /* Select-и стилизатсияшуда - сабзу сафед */
+    .form-group select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231f7a4d' d='M6 8.5L2 4.5h8z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        padding-right: 32px;
+        cursor: pointer;
+    }
+
+    body.theme-dark .form-group select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2334d399' d='M6 8.5L2 4.5h8z'/%3E%3C/svg%3E");
     }
 
     .form-row {
@@ -841,6 +1006,59 @@
         font-size: 11px;
     }
 
+    /* Theme Toggle Buttons */
+    .theme-toggle-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 4px;
+    }
+
+    .theme-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 14px;
+        border-radius: var(--radius-md);
+        border: 2px solid var(--border-color);
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: var(--transition);
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .theme-btn i {
+        font-size: 16px;
+    }
+
+    .theme-btn:hover {
+        transform: translateY(-1px);
+        border-color: var(--accent-blue);
+    }
+
+    .theme-btn-light.active {
+        background: linear-gradient(135deg, #fffbeb, #fef3c7);
+        border-color: #f59e0b;
+        color: #92400e;
+    }
+
+    .theme-btn-light.active i {
+        color: #f59e0b;
+    }
+
+    .theme-btn-dark.active {
+        background: linear-gradient(135deg, #1e293b, #0f172a);
+        border-color: #60a5fa;
+        color: #e2e8f0;
+    }
+
+    .theme-btn-dark.active i {
+        color: #60a5fa;
+    }
+
     /* Color Picker */
     .color-palette {
         display: flex;
@@ -986,35 +1204,38 @@
     <!-- Filters -->
     <div class="filters-bar">
         <div class="filters-left">
-            <!-- PRIMARY: Нарх, Квадрат, Ошёна, Нарх/м² -->
+            <!-- 4 филтри асосӣ - ҳама як андоза, таг ба таг -->
             <div class="filter-group primary">
                 <i class="fas fa-credit-card"></i>
                 <span class="filter-label">Нарх:</span>
-                <input type="number" id="priceMinFilter" placeholder="аз" style="width:75px" oninput="filterRequests(); saveFilters()">
-                <span style="color:var(--text-tertiary)">—</span>
-                <input type="number" id="priceMaxFilter" placeholder="то" style="width:75px" oninput="filterRequests(); saveFilters()">
-                <span style="font-size:11px;color:var(--text-tertiary)">C</span>
+                <input type="number" id="priceMinFilter" placeholder="аз" oninput="filterRequests(); saveFilters()">
+                <span class="filter-divider">—</span>
+                <input type="number" id="priceMaxFilter" placeholder="то" oninput="filterRequests(); saveFilters()">
+                <span class="filter-currency">C</span>
             </div>
             <div class="filter-group primary">
                 <i class="fas fa-ruler-combined"></i>
                 <span class="filter-label">м²:</span>
-                <input type="number" id="areaMinFilter" placeholder="аз" style="width:65px" oninput="filterRequests(); saveFilters()">
-                <span style="color:var(--text-tertiary)">—</span>
-                <input type="number" id="areaMaxFilter" placeholder="то" style="width:65px" oninput="filterRequests(); saveFilters()">
+                <input type="number" id="areaMinFilter" placeholder="аз" oninput="filterRequests(); saveFilters()">
+                <span class="filter-divider">—</span>
+                <input type="number" id="areaMaxFilter" placeholder="то" oninput="filterRequests(); saveFilters()">
+                <span class="filter-currency">м²</span>
             </div>
             <div class="filter-group primary">
                 <i class="fas fa-layer-group"></i>
                 <span class="filter-label">Ошёна:</span>
-                <input type="number" id="floorMinFilter" placeholder="аз" style="width:55px" oninput="filterRequests(); saveFilters()">
-                <span style="color:var(--text-tertiary)">—</span>
-                <input type="number" id="floorMaxFilter" placeholder="то" style="width:55px" oninput="filterRequests(); saveFilters()">
+                <input type="number" id="floorMinFilter" placeholder="аз" oninput="filterRequests(); saveFilters()">
+                <span class="filter-divider">—</span>
+                <input type="number" id="floorMaxFilter" placeholder="то" oninput="filterRequests(); saveFilters()">
+                <span class="filter-currency">эт</span>
             </div>
             <div class="filter-group primary">
                 <i class="fas fa-chart-line"></i>
                 <span class="filter-label">C/м²:</span>
-                <input type="number" id="priceM2MinFilter" placeholder="аз" style="width:75px" oninput="filterRequests(); saveFilters()">
-                <span style="color:var(--text-tertiary)">—</span>
-                <input type="number" id="priceM2MaxFilter" placeholder="то" style="width:75px" oninput="filterRequests(); saveFilters()">
+                <input type="number" id="priceM2MinFilter" placeholder="аз" oninput="filterRequests(); saveFilters()">
+                <span class="filter-divider">—</span>
+                <input type="number" id="priceM2MaxFilter" placeholder="то" oninput="filterRequests(); saveFilters()">
+                <span class="filter-currency">C</span>
             </div>
         </div>
         <div class="filters-right">
@@ -1026,10 +1247,10 @@
                 <i class="fas fa-building"></i>
                 <select id="typeFilter" onchange="filterRequests(); saveFilters()">
                     <option value="all">Ҳама</option>
-                    <option value="новостройка">🏗️ Навсохт</option>
-                    <option value="коробка">📦 Блок</option>
-                    <option value="котлован">🕳️ Котлован</option>
-                    <option value="Коммерческая">🏢 Тиҷоратӣ</option>
+                    <option value="новостройка">Навсохт</option>
+                    <option value="коробка">Блок</option>
+                    <option value="котлован">Котлован</option>
+                    <option value="Коммерческая">Тиҷоратӣ</option>
                 </select>
             </div>
             <div class="filter-group">
@@ -1053,8 +1274,9 @@
                     <option value="all">Ҳама колонкаҳо</option>
                 </select>
             </div>
-            <button class="btn-secondary btn-sm" onclick="resetFilters()">
+            <button class="reset-filter-btn" onclick="resetFilters()" title="Сброс">
                 <i class="fas fa-undo-alt"></i>
+                <span style="font-size:11px;">Сброс</span>
             </button>
         </div>
     </div>
@@ -1133,6 +1355,21 @@
             <span class="close" onclick="closeBoardSettingsModal()">&times;</span>
         </div>
         <div class="modal-body">
+            <!-- Темаи Равшан / Торик -->
+            <div class="form-group">
+                <label><i class="fas fa-palette"></i> Намуди мавзӯъ (тема)</label>
+                <div class="theme-toggle-group">
+                    <button type="button" class="theme-btn theme-btn-light" id="themeLightBtn" onclick="setTheme('light')">
+                        <i class="fas fa-sun"></i>
+                        <span>Равшан</span>
+                    </button>
+                    <button type="button" class="theme-btn theme-btn-dark" id="themeDarkBtn" onclick="setTheme('dark')">
+                        <i class="fas fa-moon"></i>
+                        <span>Торик</span>
+                    </button>
+                </div>
+            </div>
+            <hr style="margin: 15px 0; border: none; border-top: 1px solid var(--border-color);">
             <div class="form-group">
                 <label>Ном</label>
                 <input type="text" id="settingsBoardTitle">
@@ -1148,9 +1385,9 @@
                     <option value="0">Шахсӣ</option>
                 </select>
             </div>
-            <hr style="margin: 15px 0;">
-            <button class="btn-secondary" onclick="deleteCurrentBoard()" style="width: 100%;">
-                <i class="fas fa-trash-alt"></i> Нест кардан
+            <hr style="margin: 15px 0; border: none; border-top: 1px solid var(--border-color);">
+            <button class="btn-secondary" onclick="deleteCurrentBoard()" style="width: 100%; color: var(--accent-red);">
+                <i class="fas fa-trash-alt"></i> Доскаро нест кардан
             </button>
         </div>
         <div class="modal-footer">
@@ -1209,11 +1446,11 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label><i class="fas fa-building"></i> Намуд *</label>
-                        <select id="propertyType" required>
-                            <option value="новостройка">🏗️ Навсохт</option>
-                            <option value="коробка">📦 Блок</option>
-                            <option value="котлован">🕳️ Котлован</option>
-                            <option value="Коммерческая">🏢 Тиҷоратӣ</option>
+                        <select id="propertyType" required class="property-type-select">
+                            <option value="новостройка">Навсохт</option>
+                            <option value="коробка">Блок (Коробка)</option>
+                            <option value="котлован">Котлован</option>
+                            <option value="Коммерческая">Тиҷоратӣ</option>
                         </select>
                     </div>
                     <div class="form-group">
@@ -1309,6 +1546,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.11/dist/clipboard.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
 // ==================== ГЛОБАЛӢ ====================
 let currentBoardId = null;
@@ -1324,11 +1562,40 @@ let currentFiles = [];
 
 // ==================== INIT ====================
 document.addEventListener('DOMContentLoaded', async () => {
+    // Аввал темаро аз куки бор кун
+    initTheme();
     await loadBoards();
     loadUsersForSelect();
     // Пас аз бор шудан, филтрҳои қаблиро аз cookie бор кун
     setTimeout(loadFilters, 500);
 });
+
+// ==================== THEME (Равшан/Торик) ====================
+function initTheme() {
+    const saved = getCookie('kanban_theme') || 'light';
+    setTheme(saved, true); // silent = true (showToast накун)
+}
+
+function setTheme(theme, silent) {
+    if (theme === 'dark') {
+        document.body.classList.add('theme-dark');
+        document.documentElement.classList.add('theme-dark');
+    } else {
+        document.body.classList.remove('theme-dark');
+        document.documentElement.classList.remove('theme-dark');
+    }
+    setCookie('kanban_theme', theme, 365);
+    
+    // Тугмаҳои фаъолро ишора кун
+    const lightBtn = document.getElementById('themeLightBtn');
+    const darkBtn = document.getElementById('themeDarkBtn');
+    if (lightBtn && darkBtn) {
+        lightBtn.classList.toggle('active', theme === 'light');
+        darkBtn.classList.toggle('active', theme === 'dark');
+    }
+    
+    if (!silent) showToast(theme === 'dark' ? 'Темаи Торик фаъол шуд' : 'Темаи Равшан фаъол шуд');
+}
 
 async function loadUsersForSelect() {
     const res = await fetch('/api/users/list');
@@ -1347,12 +1614,32 @@ async function loadBoards() {
     try {
         const res = await fetch('/api/requests-boards');
         allBoards = await res.json();
-        if (allBoards.length && !currentBoardId) currentBoardId = allBoards[0].id;
+        // Аз cookie доскаи қаблан фаъолшударо мегирем
+        if (!currentBoardId) {
+            const savedBoardId = getCookie('kanban_current_board');
+            if (savedBoardId && allBoards.find(b => b.id === parseInt(savedBoardId))) {
+                currentBoardId = parseInt(savedBoardId);
+            } else if (allBoards.length) {
+                currentBoardId = allBoards[0].id;
+            }
+        }
         if (currentBoardId) await loadBoardData();
         renderBoardsPanel();
         updateBoardUI();
         if (!allBoards.length) document.getElementById('kanbanBoard').innerHTML = '<div class="loading">📋 Доска нест. Доскаи аввалро эҷод кунед!</div>';
     } catch(e) { console.error(e); }
+}
+
+// Helper барои хондани куки
+function getCookie(name) {
+    const m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : null;
+}
+
+function setCookie(name, value, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + (days || 30) * 24 * 60 * 60 * 1000);
+    document.cookie = `${name}=${encodeURIComponent(value)};path=/;expires=${d.toUTCString()}`;
 }
 
 async function loadBoardData() {
@@ -1398,10 +1685,12 @@ function updateBoardUI() {
 
 async function switchBoard(id) {
     currentBoardId = id;
+    setCookie('kanban_current_board', id, 90);
     await loadBoardData();
     renderBoardsPanel();
     updateBoardUI();
-    resetFilters();
+    // Филтрҳо нигоҳ дошта мешаванд - resetFilters-ро тоза кардем
+    loadFilters();
     showToast('Доска иваз шуд');
 }
 
@@ -1448,7 +1737,13 @@ function renderKanbanBoard() {
 }
 
 function renderCards(columnId) {
-    const requests = allRequests.filter(r => r.column_id === columnId).sort((a,b) => (a.order_index || 0) - (b.order_index || 0));
+    const requests = allRequests.filter(r => r.column_id === columnId).sort((a,b) => {
+        // order_index хурдтар = боло, агар баробар бошанд - санаи нав боло
+        const oa = (a.order_index !== undefined && a.order_index !== null) ? a.order_index : 0;
+        const ob = (b.order_index !== undefined && b.order_index !== null) ? b.order_index : 0;
+        if (oa !== ob) return oa - ob;
+        return new Date(b.created_date) - new Date(a.created_date);
+    });
     if (!requests.length) return '<div style="padding:16px; text-align:center; color:var(--text-tertiary); font-size:11px;"><i class="fas fa-inbox"></i> Заявка нест</div>';
     
     return requests.map(req => {
@@ -1851,6 +2146,13 @@ function renderViewModal(req, files) {
         <div style="margin-bottom: 16px; display:flex; gap:8px; flex-wrap:wrap;">
             <button class="copy-btn" id="copyMainDataBtn"><i class="fas fa-copy"></i> Нусхабардории маълумотҳо</button>
             <button class="copy-btn" id="sendWhatsappBtn" style="background:var(--accent-green);"><i class="fab fa-whatsapp"></i> Ватсап</button>
+            <button class="copy-btn" id="forwardWhatsappBtn" style="background:linear-gradient(135deg, #25D366, #128C7E); display:inline-flex; align-items:center; gap:5px;" title="F - Нусхабардории ҳама аксҳо якбора">
+                <span style="background:white; color:#25D366; width:18px; height:18px; border-radius:50%; display:inline-flex; align-items:center; justify-content:center; font-weight:900; font-size:11px;">F</span>
+                <i class="fab fa-whatsapp"></i> Forward
+            </button>
+            <button class="copy-btn" id="copyAllImagesBtn" style="background:linear-gradient(135deg, #6366f1, #8b5cf6);" title="Ҳама аксҳоро ZIP кун ва download намо">
+                <i class="fas fa-images"></i> Ҳама аксҳо (ZIP)
+            </button>
         </div>
         ${files.length ? `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
@@ -1918,6 +2220,108 @@ function renderViewModal(req, files) {
             }, 600);
         } else {
             window.open(`https://wa.me/?text=${waText}`, '_blank');
+        }
+    });
+    
+    // Кнопкаи F - Forward WhatsApp - ҳама аксҳоро якҷоя нусхабардорӣ + матн
+    document.getElementById('forwardWhatsappBtn').addEventListener('click', async () => {
+        const imageFiles = currentViewFiles.filter(f => f.type === 'image');
+        if (imageFiles.length === 0) {
+            showToast('Дар ин заявка акс нест', 2500);
+            return;
+        }
+        
+        try {
+            // ҳама аксҳоро як-як ба ClipboardItem табдил диҳем (мултипл items)
+            showToast(`Омодасозии ${imageFiles.length} акс барои нусхабардорӣ...`, 2000);
+            
+            const clipItems = [];
+            for (const f of imageFiles) {
+                try {
+                    const response = await fetch(f.path);
+                    const blob = await response.blob();
+                    let pngBlob = blob;
+                    
+                    if (blob.type !== 'image/png') {
+                        const imgBitmap = await createImageBitmap(blob);
+                        const canvas = document.createElement('canvas');
+                        canvas.width = imgBitmap.width;
+                        canvas.height = imgBitmap.height;
+                        canvas.getContext('2d').drawImage(imgBitmap, 0, 0);
+                        pngBlob = await new Promise(res => canvas.toBlob(res, 'image/png'));
+                    }
+                    clipItems.push(new ClipboardItem({ 'image/png': pngBlob }));
+                } catch(err) { console.warn('Skip:', f.path, err); }
+            }
+            
+            // Кушиш кардан як-як ҳамаро ба clipboard гузорем
+            // Браузер танҳо охирин акс-ро нигоҳ медорад дар clipboard,
+            // вале мо мегӯем ба истифодабаранда ки ҳамаро paste кардан имконпазир аст бо такроран Ctrl+V
+            
+            // Усули воқеӣ: Аксҳоро як-як ҳамчун object URL дар tab-ҳои нав мекушоем
+            // ва истифодабаранда метавонад онҳоро яке-якбора drag-drop кунад
+            if (clipItems.length > 0) {
+                // Охирин акс-ро ба clipboard гузор (ҳамчун preview)
+                await navigator.clipboard.write([clipItems[clipItems.length - 1]]);
+                
+                // Матнро низ нусхабардорӣ кун (барои дастур)
+                showToast(`Аксҳо тайёр (${imageFiles.length} дона). WhatsApp Web кушода шуд - аксҳоро якбора drag кунед`, 4000);
+                
+                // WhatsApp Web кушо
+                window.open('https://web.whatsapp.com/', '_blank');
+                
+                // Ҳамаи аксҳоро ҳамчун file objects ба яке-яке tab кушо барои drag-drop
+                setTimeout(() => {
+                    imageFiles.forEach((f, i) => {
+                        setTimeout(() => window.open(f.path, '_blank'), 200 * i);
+                    });
+                }, 800);
+            } else {
+                showToast('Аксҳоро нусхабардорӣ карда нашуд', 2500);
+            }
+        } catch(err) {
+            console.error(err);
+            showToast('Хатогӣ дар нусхабардорӣ. ZIP-ро санҷед.', 3000);
+        }
+    });
+    
+    // Кнопкаи "Ҳама аксҳо (ZIP)" - ҳама аксҳоро ба як ZIP барои download
+    document.getElementById('copyAllImagesBtn').addEventListener('click', async () => {
+        const allMediaFiles = currentViewFiles.filter(f => f.type === 'image' || f.type === 'video');
+        if (allMediaFiles.length === 0) {
+            showToast('Файл нест', 2000);
+            return;
+        }
+        
+        if (typeof JSZip === 'undefined') {
+            showToast('Китобхонаи ZIP бор нашуд. Сафҳаро аз нав кушоед.', 3000);
+            return;
+        }
+        
+        showToast(`Омодасозии ${allMediaFiles.length} файл ба ZIP...`, 2500);
+        try {
+            const zip = new JSZip();
+            for (let i = 0; i < allMediaFiles.length; i++) {
+                const f = allMediaFiles[i];
+                const response = await fetch(f.path);
+                const blob = await response.blob();
+                const ext = (f.path.split('.').pop() || 'jpg').toLowerCase();
+                const fileName = f.name || `file_${i+1}.${ext}`;
+                zip.file(fileName, blob);
+            }
+            const zipBlob = await zip.generateAsync({ type: 'blob' });
+            const url = URL.createObjectURL(zipBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `zayavka_${currentViewRequestId || 'files'}_${Date.now()}.zip`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast(`ZIP бо ${allMediaFiles.length} файл омода шуд!`, 2500);
+        } catch(err) {
+            console.error(err);
+            showToast('Хатогӣ ҳангоми сохтани ZIP', 3000);
         }
     });
     
@@ -2032,8 +2436,16 @@ function showBoardSettings() {
         document.getElementById('settingsBoardTitle').value = b.title;
         document.getElementById('settingsBoardColor').value = b.color || '#f8fafc';
         document.getElementById('settingsBoardIsPublic').value = b.is_public;
-        openModal('boardSettingsModal');
     }
+    // Темаи ҳозираро ишора кун
+    const isDark = document.body.classList.contains('theme-dark');
+    const lightBtn = document.getElementById('themeLightBtn');
+    const darkBtn = document.getElementById('themeDarkBtn');
+    if (lightBtn && darkBtn) {
+        lightBtn.classList.toggle('active', !isDark);
+        darkBtn.classList.toggle('active', isDark);
+    }
+    openModal('boardSettingsModal');
 }
 
 function showAddColumnModal() {
@@ -2280,7 +2692,16 @@ document.getElementById('requestForm').addEventListener('submit', async (e) => {
     const firstColumnId = allColumns.length ? allColumns[0].id : null;
     if (!firstColumnId && !requestId) { alert('Аввал колонка эҷод кунед'); return; }
     
-    // Барои заявкаи нав, order_index = 0 (дар болотарин ҷой)
+    // Барои заявкаи нав - order_index хурдтарин аз ҳама (ё -1) барои дар боло будан
+    let newOrderIndex;
+    if (!requestId && firstColumnId) {
+        const cardsInFirstCol = allRequests.filter(r => r.column_id === firstColumnId);
+        const minOrder = cardsInFirstCol.length 
+            ? Math.min(...cardsInFirstCol.map(r => (r.order_index !== undefined && r.order_index !== null) ? r.order_index : 0))
+            : 0;
+        newOrderIndex = minOrder - 1;
+    }
+    
     const data = {
         property_type: document.getElementById('propertyType').value,
         address: document.getElementById('address').value,
@@ -2298,7 +2719,7 @@ document.getElementById('requestForm').addEventListener('submit', async (e) => {
         files: uploadedFiles,
         column_id: firstColumnId,
         board_id: currentBoardId,
-        order_index: requestId ? undefined : 0
+        order_index: requestId ? undefined : newOrderIndex
     };
     
     let success;
