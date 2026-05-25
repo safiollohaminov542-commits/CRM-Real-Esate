@@ -1,36 +1,61 @@
 {% extends "base.html" %}
-{% block title %}Kanban Board - CRM Лиды{% endblock %}
+{% block title %}Лиды - Kanban{% endblock %}
 
 {% block content %}
 <style>
-    /* ==================== ROOT VARIABLES ==================== */
+    /* ==================== ROOT VARIABLES (LIGHT THEME) ==================== */
     :root {
-        --bg-primary: #0f172a;
-        --bg-secondary: #1e293b;
-        --bg-tertiary: #334155;
-        --bg-card: #1e293b;
-        --bg-column: #0f172a;
-        --border-color: #334155;
-        --text-primary: #f1f5f9;
-        --text-secondary: #94a3b8;
-        --text-tertiary: #64748b;
+        --bg-primary: #f5f7fa;
+        --bg-secondary: #ffffff;
+        --bg-tertiary: #f0f2f5;
+        --bg-card: #ffffff;
+        --bg-column: #f8f9fa;
+        --border-color: #e9ecef;
+        --border-light: #f1f3f5;
+        --text-primary: #212529;
+        --text-secondary: #6c757d;
+        --text-tertiary: #adb5bd;
         --accent-blue: #1f7a4d;
         --accent-purple: #8b5cf6;
         --accent-green: #22c55e;
         --accent-red: #ef4444;
         --accent-orange: #f59e0b;
-        --accent-pink: #ec4899;
-        --accent-cyan: #06b6d4;
-        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
-        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5);
-        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
-        --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-        --radius-sm: 8px;
-        --radius-md: 12px;
-        --radius-lg: 16px;
-        --radius-xl: 20px;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+        --shadow-md: 0 2px 4px -1px rgba(0, 0, 0, 0.05);
+        --shadow-lg: 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+        --shadow-xl: 0 8px 24px -4px rgba(0, 0, 0, 0.1);
+        --transition: all 0.2s ease;
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 14px;
+        --radius-xl: 18px;
     }
+
+    /* ==================== DARK THEME ==================== */
+    body.theme-dark, html.theme-dark, .theme-dark .kanban-wrapper {
+        --bg-primary: #0f1623;
+        --bg-secondary: #1a2332;
+        --bg-tertiary: #243042;
+        --bg-card: #1e2939;
+        --bg-column: #182030;
+        --border-color: #2d3a4f;
+        --border-light: #243042;
+        --text-primary: #e6edf5;
+        --text-secondary: #a8b3c5;
+        --text-tertiary: #6b7a92;
+        --accent-blue: #2ea16a;
+        --accent-purple: #a78bfa;
+        --accent-green: #34d399;
+        --accent-red: #f87171;
+        --accent-orange: #fbbf24;
+        --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+        --shadow-md: 0 2px 6px -1px rgba(0, 0, 0, 0.5);
+        --shadow-lg: 0 4px 14px -2px rgba(0, 0, 0, 0.55);
+        --shadow-xl: 0 8px 28px -4px rgba(0, 0, 0, 0.6);
+    }
+
+    body.theme-dark { background: #0f1623; }
+    body.theme-dark .kanban-wrapper { background: var(--bg-primary); }
 
     * {
         margin: 0;
@@ -38,7 +63,6 @@
         box-sizing: border-box;
     }
 
-    /* ==================== MAIN LAYOUT ==================== */
     .kanban-wrapper {
         display: flex;
         flex-direction: column;
@@ -49,40 +73,39 @@
 
     /* ==================== HEADER ==================== */
     .kanban-header {
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(12px);
+        background: var(--bg-secondary);
         border-bottom: 1px solid var(--border-color);
-        padding: 12px 24px;
+        padding: 10px 20px;
         display: flex;
         justify-content: space-between;
         align-items: center;
         flex-wrap: wrap;
-        gap: 16px;
+        gap: 12px;
         z-index: 20;
     }
 
     .header-left {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 12px;
     }
 
     .board-icon {
-        width: 44px;
-        height: 44px;
+        width: 38px;
+        height: 38px;
         background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
         border-radius: var(--radius-md);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 20px;
+        font-size: 18px;
         cursor: pointer;
         transition: var(--transition);
+        color: white;
     }
 
     .board-icon:hover {
-        transform: scale(1.05);
-        box-shadow: var(--shadow-md);
+        transform: scale(1.02);
     }
 
     .board-title-box {
@@ -91,83 +114,115 @@
     }
 
     .board-title {
-        font-size: 22px;
-        font-weight: 700;
-        background: linear-gradient(135deg, #fff, var(--accent-purple));
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
+        font-size: 18px;
+        font-weight: 600;
+        color: var(--text-primary);
     }
 
     .board-stats {
-        font-size: 12px;
-        color: var(--text-secondary);
+        font-size: 11px;
+        color: var(--text-tertiary);
         margin-top: 2px;
     }
 
     .board-stats span {
         color: var(--accent-blue);
         font-weight: 600;
-        font-size: 14px;
     }
 
     .header-actions {
         display: flex;
-        gap: 10px;
+        gap: 8px;
+        flex-wrap: wrap;
     }
 
     /* ==================== FILTERS ==================== */
     .filters-bar {
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(12px);
-        padding: 10px 24px;
+        background: var(--bg-secondary);
+        padding: 10px 20px;
         border-bottom: 1px solid var(--border-color);
         display: flex;
-        flex-wrap: wrap;
-        gap: 10px;
+        gap: 8px;
         align-items: center;
         z-index: 15;
-        overflow-x: auto;
-    }
-
-    .filters-bar::-webkit-scrollbar {
-        height: 3px;
+        flex-wrap: wrap;
     }
 
     .filter-group {
         display: flex;
         align-items: center;
-        gap: 8px;
-        background: var(--bg-secondary);
-        padding: 6px 14px;
+        gap: 6px;
+        background: var(--bg-tertiary);
+        padding: 7px 10px;
         border-radius: var(--radius-md);
         border: 1px solid var(--border-color);
-        transition: var(--transition);
-    }
-
-    .filter-group:hover {
-        border-color: var(--accent-blue);
+        height: 36px;
+        box-sizing: border-box;
     }
 
     .filter-group i {
         color: var(--accent-blue);
-        font-size: 13px;
+        font-size: 12px;
+        flex-shrink: 0;
     }
 
-    .filter-group input,
-    .filter-group select {
+    .filter-group input, .filter-group select {
         background: transparent;
         border: none;
         color: var(--text-primary);
-        padding: 6px 0;
-        font-size: 13px;
+        padding: 4px 0;
+        font-size: 12px;
         outline: none;
+        min-width: 0;
     }
 
-    .filter-group select option {
+    .reset-filter-btn {
+        height: 36px;
+        background: var(--bg-tertiary);
+        border: 1px solid var(--border-color);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+        color: var(--text-secondary);
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        transition: var(--transition);
+        padding: 0 14px;
+    }
+
+    .reset-filter-btn:hover {
+        background: var(--accent-red);
+        color: white;
+        border-color: var(--accent-red);
+    }
+
+    /* ==================== SELECT DROPDOWN STYLING ==================== */
+    .filter-group select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%231f7a4d' d='M5 7L1 3h8z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 4px center;
+        padding-right: 16px;
+        cursor: pointer;
+    }
+
+    body.theme-dark .filter-group select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%2334d399' d='M5 7L1 3h8z'/%3E%3C/svg%3E");
+    }
+
+    .filter-group select option,
+    .form-group select option {
         background: var(--bg-secondary);
+        color: var(--text-primary);
+        padding: 10px 12px;
+        font-size: 13px;
     }
 
-    /* ==================== KANBAN BOARD ==================== */
+    /* ==================== KANBAN MAIN ==================== */
     .kanban-main {
         flex: 1;
         overflow: hidden;
@@ -178,13 +233,13 @@
         height: 100%;
         overflow-x: auto;
         overflow-y: hidden;
-        padding: 20px;
+        padding: 16px;
         transition: background 0.3s ease;
     }
 
     .kanban-board {
         display: flex;
-        gap: 20px;
+        gap: 16px;
         align-items: flex-start;
         height: 100%;
         min-width: min-content;
@@ -192,18 +247,16 @@
 
     /* ==================== COLUMN ==================== */
     .kanban-column {
-        min-width: 320px;
-        width: 320px;
-        max-height: calc(100vh - 220px);
+        min-width: 300px;
+        width: 300px;
+        max-height: calc(100vh - 140px);
         background: var(--bg-column);
         border-radius: var(--radius-lg);
         display: flex;
         flex-direction: column;
-        box-shadow: var(--shadow-md);
+        box-shadow: var(--shadow-sm);
         border: 1px solid var(--border-color);
         flex-shrink: 0;
-        backdrop-filter: blur(4px);
-        transition: var(--transition);
     }
 
     .kanban-column.dragging {
@@ -211,29 +264,28 @@
     }
 
     .kanban-column.drag-over {
-        border-left: 3px solid var(--accent-blue);
+        border-left: 2px solid var(--accent-blue);
+        background: var(--bg-tertiary);
     }
 
-    /* Свернутая колонка */
     .kanban-column.collapsed {
         min-width: 80px;
         width: 80px;
     }
 
     .column-header {
-        padding: 14px 16px;
-        background: linear-gradient(135deg, var(--bg-secondary), var(--bg-column));
+        padding: 10px 14px;
+        background: var(--bg-secondary);
         border-radius: var(--radius-lg) var(--radius-lg) 0 0;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        cursor: pointer;
-        border-bottom: 2px solid transparent;
+        border-bottom: 1px solid var(--border-color);
         flex-shrink: 0;
     }
 
     .collapsed .column-header {
-        padding: 20px 10px;
+        padding: 16px 8px;
         justify-content: center;
         flex-direction: column;
         border-radius: var(--radius-lg);
@@ -242,74 +294,67 @@
     .column-left {
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
     }
 
     .collapsed .column-left {
         flex-direction: column;
         writing-mode: vertical-lr;
         transform: rotate(180deg);
-        gap: 15px;
+        gap: 12px;
     }
 
     .column-drag-handle {
         cursor: grab;
         color: var(--text-tertiary);
-        font-size: 14px;
+        font-size: 12px;
     }
 
-    .collapsed .column-drag-handle {
-        display: none;
-    }
+    .column-drag-handle:active { cursor: grabbing; }
+
+    .collapsed .column-drag-handle { display: none; }
 
     .column-title h3 {
-        font-size: 15px;
+        font-size: 13px;
         font-weight: 600;
         color: var(--text-primary);
     }
 
-    .collapsed .column-title h3 {
-        font-size: 13px;
-    }
+    .collapsed .column-title h3 { font-size: 12px; }
 
     .column-badge {
-        background: rgba(59, 130, 246, 0.2);
+        background: rgba(31, 122, 77, 0.12);
         border-radius: 20px;
-        padding: 2px 10px;
-        font-size: 12px;
-        font-weight: 600;
+        padding: 2px 8px;
+        font-size: 11px;
+        font-weight: 500;
         color: var(--accent-blue);
     }
 
-    .collapsed .column-badge {
-        margin-top: 10px;
-    }
+    .collapsed .column-badge { margin-top: 8px; }
 
     .column-actions {
         position: relative;
     }
 
-    .collapsed .column-actions {
-        display: none;
-    }
+    .collapsed .column-actions { display: none; }
 
     .column-menu-btn {
         background: transparent;
         border: none;
         color: var(--text-tertiary);
         cursor: pointer;
-        font-size: 18px;
-        padding: 6px 10px;
+        font-size: 16px;
+        padding: 4px 8px;
         border-radius: var(--radius-sm);
         transition: var(--transition);
     }
 
     .column-menu-btn:hover {
-        background: rgba(255, 255, 255, 0.1);
-        color: white;
+        background: var(--bg-tertiary);
+        color: var(--accent-blue);
     }
 
-    /* Dropdown Menu - открывается прямо под иконкой */
     .column-dropdown {
         position: absolute;
         top: 100%;
@@ -317,7 +362,7 @@
         background: var(--bg-secondary);
         border: 1px solid var(--border-color);
         border-radius: var(--radius-md);
-        min-width: 220px;
+        min-width: 200px;
         z-index: 1000;
         box-shadow: var(--shadow-xl);
         display: none;
@@ -325,9 +370,7 @@
         animation: fadeIn 0.15s ease;
     }
 
-    .column-dropdown.show {
-        display: block;
-    }
+    .column-dropdown.show { display: block; }
 
     @keyframes fadeIn {
         from { opacity: 0; transform: translateY(-5px); }
@@ -335,127 +378,111 @@
     }
 
     .dropdown-item {
-        padding: 10px 16px;
+        padding: 9px 14px;
         cursor: pointer;
         transition: var(--transition);
         color: var(--text-primary);
-        font-size: 13px;
+        font-size: 12px;
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
     }
 
     .dropdown-item:hover {
-        background: rgba(59, 130, 246, 0.2);
+        background: var(--bg-tertiary);
+        color: var(--accent-blue);
     }
 
-    .dropdown-item.danger {
-        color: var(--accent-red);
-    }
+    .dropdown-item.danger { color: var(--accent-red); }
+    .dropdown-item.danger:hover { background: rgba(239, 68, 68, 0.1); color: var(--accent-red); }
 
     .dropdown-divider {
         height: 1px;
         background: var(--border-color);
-        margin: 5px 0;
+        margin: 4px 0;
     }
 
-    .collapsed .cards-container {
-        display: none;
-    }
+    .collapsed .cards-container { display: none; }
 
     /* Cards Container */
     .cards-container {
-        padding: 12px;
+        padding: 10px;
+        padding-bottom: 60px;
         flex: 1;
         overflow-y: auto;
+        min-height: 100px;
+        scrollbar-gutter: stable;
     }
 
-    .cards-container::-webkit-scrollbar {
-        width: 4px;
-    }
-
+    .cards-container::-webkit-scrollbar { width: 3px; }
     .cards-container::-webkit-scrollbar-track {
-        background: var(--bg-tertiary);
+        background: var(--border-color);
         border-radius: 10px;
     }
-
     .cards-container::-webkit-scrollbar-thumb {
         background: var(--accent-blue);
         border-radius: 10px;
     }
 
-    /* ==================== CARD ==================== */
+    /* ==================== KANBAN CARD ==================== */
     .kanban-card {
         background: var(--bg-card);
         border-radius: var(--radius-md);
-        padding: 12px;
-        margin-bottom: 12px;
+        padding: 10px;
+        margin-bottom: 10px;
         cursor: grab;
         transition: var(--transition);
         border: 1px solid var(--border-color);
         position: relative;
+        box-shadow: var(--shadow-sm);
     }
 
-    .kanban-card:active {
-        cursor: grabbing;
-    }
+    .kanban-card:active { cursor: grabbing; }
 
-    .kanban-card.dragging {
-        opacity: 0.4;
-        transform: scale(0.98);
-    }
+    .kanban-card.dragging { opacity: 0.5; }
 
-    .kanban-card.drag-over-top {
-        border-top: 3px solid var(--accent-blue);
-    }
-
-    .kanban-card.drag-over-bottom {
-        border-bottom: 3px solid var(--accent-blue);
-    }
+    .kanban-card.drag-over-top { border-top: 2px solid var(--accent-blue); }
+    .kanban-card.drag-over-bottom { border-bottom: 2px solid var(--accent-blue); }
 
     .kanban-card:hover {
-        transform: translateY(-2px);
+        transform: translateY(-1px);
         border-color: var(--accent-blue);
-        box-shadow: var(--shadow-lg);
+        box-shadow: var(--shadow-md);
     }
 
     .card-header {
         display: flex;
         justify-content: space-between;
-        align-items: flex-start;
+        align-items: center;
         margin-bottom: 8px;
     }
 
     .card-name {
-        font-weight: 700;
-        font-size: 14px;
+        font-weight: 600;
+        font-size: 13px;
         color: var(--text-primary);
-        background: rgba(59, 130, 246, 0.1);
-        padding: 4px 10px;
-        border-radius: 20px;
-        display: inline-block;
+        background: rgba(31, 122, 77, 0.08);
+        padding: 3px 8px;
+        border-radius: 16px;
     }
 
     .card-actions {
         display: flex;
-        gap: 6px;
+        gap: 4px;
         opacity: 0;
         transition: var(--transition);
     }
 
-    .kanban-card:hover .card-actions {
-        opacity: 1;
-    }
+    .kanban-card:hover .card-actions { opacity: 1; }
 
     .card-actions button {
         background: var(--bg-tertiary);
         border: none;
         border-radius: var(--radius-sm);
-        padding: 4px 8px;
+        padding: 3px 6px;
         cursor: pointer;
-        font-size: 11px;
+        font-size: 10px;
         color: var(--text-secondary);
-        transition: var(--transition);
     }
 
     .card-actions button:hover {
@@ -464,25 +491,25 @@
     }
 
     .card-phone {
-        font-size: 13px;
+        font-size: 11px;
         color: var(--accent-blue);
         display: flex;
         align-items: center;
-        gap: 6px;
-        margin-bottom: 10px;
+        gap: 4px;
+        margin-bottom: 6px;
         font-family: monospace;
     }
 
     .card-info {
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 8px;
+        gap: 6px;
+        margin-bottom: 6px;
     }
 
     .source-badge {
         padding: 2px 8px;
-        border-radius: 20px;
+        border-radius: 12px;
         font-size: 10px;
         font-weight: 500;
         display: inline-flex;
@@ -490,113 +517,124 @@
         gap: 4px;
     }
 
-    .source-incoming { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-    .source-outgoing { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
-    .source-whatsapp { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
-    .source-telegram { background: rgba(14, 165, 233, 0.2); color: #38bdf8; }
-    .source-somon { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
-    .source-instagram { background: rgba(236, 72, 153, 0.2); color: #f472b6; }
-    .source-tiktok { background: rgba(0, 0, 0, 0.3); color: #fff; }
+    .source-incoming { background: rgba(59, 130, 246, 0.15); color: #2563eb; }
+    .source-outgoing { background: rgba(34, 197, 94, 0.15); color: #16a34a; }
+    .source-whatsapp { background: rgba(34, 197, 94, 0.15); color: #16a34a; }
+    .source-telegram { background: rgba(14, 165, 233, 0.15); color: #0284c7; }
+    .source-somon { background: rgba(245, 158, 11, 0.15); color: #d97706; }
+    .source-instagram { background: rgba(236, 72, 153, 0.15); color: #db2777; }
+    .source-tiktok { background: rgba(0, 0, 0, 0.1); color: var(--text-primary); }
+
+    body.theme-dark .source-incoming { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
+    body.theme-dark .source-outgoing { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+    body.theme-dark .source-whatsapp { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+    body.theme-dark .source-telegram { background: rgba(14, 165, 233, 0.2); color: #38bdf8; }
+    body.theme-dark .source-somon { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
+    body.theme-dark .source-instagram { background: rgba(236, 72, 153, 0.2); color: #f472b6; }
+    body.theme-dark .source-tiktok { background: rgba(255, 255, 255, 0.1); color: #fff; }
+
+    .card-topic {
+        font-size: 11px;
+        color: var(--text-secondary);
+        margin-bottom: 6px;
+    }
 
     .card-meta {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        font-size: 10px;
+        font-size: 9px;
         color: var(--text-tertiary);
-        margin-top: 8px;
-        padding-top: 8px;
-        border-top: 1px solid var(--border-color);
+        margin-top: 6px;
+        padding-top: 6px;
+        border-top: 1px solid var(--border-light);
     }
 
     .card-badges {
         display: flex;
-        gap: 6px;
+        gap: 4px;
     }
 
     .badge {
-        background: rgba(34, 197, 94, 0.2);
+        background: rgba(34, 197, 94, 0.15);
         padding: 2px 6px;
         border-radius: 10px;
         font-size: 9px;
-        color: #4ade80;
+        color: var(--accent-green);
     }
 
     /* Add Column Button */
     .add-column-btn {
-        min-width: 320px;
-        width: 320px;
-        background: rgba(30, 41, 59, 0.6);
+        min-width: 300px;
+        width: 300px;
+        background: var(--bg-secondary);
         border-radius: var(--radius-lg);
-        padding: 16px;
+        padding: 12px;
         text-align: center;
         cursor: pointer;
         transition: var(--transition);
         border: 1px dashed var(--border-color);
         color: var(--text-tertiary);
         flex-shrink: 0;
+        font-size: 12px;
     }
 
     .add-column-btn:hover {
-        background: rgba(30, 41, 59, 0.9);
+        background: var(--bg-tertiary);
         border-color: var(--accent-blue);
         color: var(--accent-blue);
     }
 
     /* ==================== BOTTOM BOARDS PANEL ==================== */
     .bottom-panel {
-        background: rgba(15, 23, 42, 0.95);
-        backdrop-filter: blur(12px);
+        background: var(--bg-secondary);
         border-top: 1px solid var(--border-color);
-        padding: 8px 20px;
+        padding: 6px 16px;
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
         overflow-x: auto;
         z-index: 10;
     }
 
-    .bottom-panel::-webkit-scrollbar {
-        height: 3px;
-    }
+    .bottom-panel::-webkit-scrollbar { height: 3px; }
 
     .board-tab {
         display: flex;
         align-items: center;
-        gap: 10px;
-        padding: 6px 16px;
+        gap: 8px;
+        padding: 5px 14px;
         border-radius: var(--radius-md);
         cursor: pointer;
         transition: var(--transition);
-        background: var(--bg-secondary);
+        background: var(--bg-tertiary);
         flex-shrink: 0;
+        font-size: 12px;
     }
 
     .board-tab.active {
         background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-    }
-
-    .board-tab.active span {
         color: white;
     }
 
-    .board-tab:hover {
-        transform: translateY(-2px);
-    }
+    .board-tab.active span,
+    .board-tab.active i { color: white; }
+
+    .board-tab:hover { transform: translateY(-1px); }
 
     .board-tab-icon {
-        width: 28px;
-        height: 28px;
-        background: rgba(255, 255, 255, 0.2);
+        width: 24px;
+        height: 24px;
+        background: rgba(0, 0, 0, 0.1);
         border-radius: var(--radius-sm);
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 12px;
+        font-size: 11px;
     }
 
     .board-tab-name {
-        font-size: 13px;
+        font-size: 12px;
         color: var(--text-primary);
     }
 
@@ -614,79 +652,82 @@
         top: 0;
         width: 100%;
         height: 100%;
-        background: rgba(0, 0, 0, 0.8);
-        backdrop-filter: blur(8px);
+        background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(4px);
+        align-items: center;
+        justify-content: center;
     }
+
+    .modal.show { display: flex !important; }
 
     .modal-content {
         background: var(--bg-secondary);
-        margin: 5% auto;
+        margin: 0 auto;
         border-radius: var(--radius-xl);
         width: 90%;
-        max-width: 550px;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
         box-shadow: var(--shadow-xl);
         border: 1px solid var(--border-color);
-        animation: modalSlideIn 0.2s ease;
+        animation: modalSlideIn 0.25s ease;
     }
 
-    .modal-large {
-        max-width: 800px;
-    }
+    .modal-large { max-width: 800px; }
 
     @keyframes modalSlideIn {
-        from { opacity: 0; transform: translateY(-20px); }
-        to { opacity: 1; transform: translateY(0); }
+        from { opacity: 0; transform: translateY(-20px) scale(0.96); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
     }
 
     .modal-header {
-        padding: 20px 24px;
+        padding: 16px 20px;
         border-bottom: 1px solid var(--border-color);
         display: flex;
         justify-content: space-between;
         align-items: center;
+        background: var(--bg-secondary);
+        border-radius: var(--radius-xl) var(--radius-xl) 0 0;
     }
 
     .modal-header h2 {
-        font-size: 20px;
+        font-size: 18px;
         color: var(--text-primary);
         display: flex;
         align-items: center;
-        gap: 10px;
+        gap: 8px;
     }
 
     .modal-header .close {
-        font-size: 28px;
+        font-size: 24px;
         cursor: pointer;
         color: var(--text-tertiary);
-        transition: var(--transition);
     }
 
-    .modal-header .close:hover {
-        color: var(--accent-red);
-    }
+    .modal-header .close:hover { color: var(--accent-red); }
 
     .modal-body {
-        padding: 24px;
+        padding: 20px;
+        max-height: 65vh;
+        overflow-y: auto;
     }
 
     .modal-footer {
-        padding: 16px 24px;
+        padding: 14px 20px;
         border-top: 1px solid var(--border-color);
         display: flex;
         justify-content: flex-end;
-        gap: 12px;
+        gap: 10px;
     }
 
     /* Forms */
-    .form-group {
-        margin-bottom: 20px;
-    }
+    .form-group { margin-bottom: 16px; }
 
     .form-group label {
         display: block;
-        margin-bottom: 8px;
-        color: var(--text-primary);
-        font-size: 13px;
+        margin-bottom: 6px;
+        color: var(--text-secondary);
+        font-size: 12px;
         font-weight: 500;
     }
 
@@ -694,12 +735,12 @@
     .form-group select,
     .form-group textarea {
         width: 100%;
-        padding: 12px;
+        padding: 8px 12px;
         background: var(--bg-tertiary);
         border: 1px solid var(--border-color);
         border-radius: var(--radius-md);
         color: var(--text-primary);
-        font-size: 14px;
+        font-size: 13px;
         transition: var(--transition);
     }
 
@@ -710,99 +751,152 @@
         border-color: var(--accent-blue);
     }
 
+    .form-group select {
+        appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%231f7a4d' d='M6 8.5L2 4.5h8z'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        padding-right: 32px;
+        cursor: pointer;
+    }
+
+    body.theme-dark .form-group select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2334d399' d='M6 8.5L2 4.5h8z'/%3E%3C/svg%3E");
+    }
+
     .form-row {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 16px;
+        gap: 12px;
     }
 
-    .form-row-full {
-        grid-column: span 2;
-    }
+    .form-row-full { grid-column: span 2; }
 
-    /* Color Options */
+    /* Color Palette */
     .color-palette {
         display: flex;
-        gap: 10px;
+        gap: 8px;
         flex-wrap: wrap;
-        margin-bottom: 15px;
+        margin-bottom: 8px;
     }
 
     .color-option {
-        width: 36px;
-        height: 36px;
-        border-radius: 10px;
+        width: 28px;
+        height: 28px;
+        border-radius: var(--radius-sm);
         cursor: pointer;
-        transition: var(--transition);
         border: 2px solid transparent;
+        transition: var(--transition);
     }
 
-    .color-option:hover {
-        transform: scale(1.1);
-    }
+    .color-option:hover { transform: scale(1.05); }
 
     .color-option.selected {
-        border-color: white;
-        box-shadow: 0 0 0 2px var(--accent-blue);
+        border-color: var(--accent-blue);
+        box-shadow: 0 0 0 2px rgba(31, 122, 77, 0.3);
     }
 
     /* Buttons */
     .btn-primary {
         background: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
         border: none;
-        padding: 10px 20px;
+        padding: 8px 16px;
         border-radius: var(--radius-md);
         color: white;
-        font-weight: 600;
+        font-weight: 500;
+        font-size: 12px;
         cursor: pointer;
         transition: var(--transition);
     }
 
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--shadow-md);
-    }
+    .btn-primary:hover { transform: translateY(-1px); }
 
     .btn-secondary {
         background: var(--bg-tertiary);
         border: 1px solid var(--border-color);
-        padding: 10px 20px;
+        padding: 8px 16px;
         border-radius: var(--radius-md);
         color: var(--text-primary);
+        font-size: 12px;
         cursor: pointer;
         transition: var(--transition);
     }
 
-    .btn-secondary:hover {
-        background: var(--bg-card);
-    }
+    .btn-secondary:hover { background: var(--border-color); }
 
-    .btn-sm {
-        padding: 6px 14px;
-        font-size: 12px;
-    }
+    .btn-sm { padding: 5px 12px; font-size: 11px; }
 
     .btn-danger {
         background: var(--accent-red);
+        color: white;
+        border: none;
     }
 
-    .btn-danger:hover {
-        background: #dc2626;
+    .btn-danger:hover { background: #dc2626; }
+
+    /* Theme Toggle Buttons */
+    .theme-toggle-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 4px;
     }
+
+    .theme-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 14px;
+        border-radius: var(--radius-md);
+        border: 2px solid var(--border-color);
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        cursor: pointer;
+        transition: var(--transition);
+        font-size: 13px;
+        font-weight: 500;
+    }
+
+    .theme-btn i { font-size: 16px; }
+
+    .theme-btn:hover {
+        transform: translateY(-1px);
+        border-color: var(--accent-blue);
+    }
+
+    .theme-btn-light.active {
+        background: linear-gradient(135deg, #fffbeb, #fef3c7);
+        border-color: #f59e0b;
+        color: #92400e;
+    }
+
+    .theme-btn-light.active i { color: #f59e0b; }
+
+    .theme-btn-dark.active {
+        background: linear-gradient(135deg, #1e293b, #0f172a);
+        border-color: #60a5fa;
+        color: #e2e8f0;
+    }
+
+    .theme-btn-dark.active i { color: #60a5fa; }
 
     /* Toast */
     .toast {
         position: fixed;
-        bottom: 30px;
-        right: 30px;
+        bottom: 20px;
+        right: 20px;
         background: var(--bg-secondary);
-        border-left: 4px solid var(--accent-green);
+        border-left: 3px solid var(--accent-green);
         border-radius: var(--radius-md);
-        padding: 12px 20px;
+        padding: 10px 16px;
         color: var(--text-primary);
         z-index: 1001;
         box-shadow: var(--shadow-lg);
         animation: slideInRight 0.3s ease;
+        font-size: 13px;
     }
 
     @keyframes slideInRight {
@@ -815,93 +909,36 @@
         to { transform: translateX(100%); opacity: 0; }
     }
 
-    /* Loading */
     .loading {
         text-align: center;
-        padding: 40px;
+        padding: 30px;
         color: var(--text-tertiary);
+        font-size: 13px;
     }
 
     /* Responsive */
     @media (max-width: 768px) {
         .kanban-column {
-            min-width: 280px;
-            width: 280px;
+            min-width: 260px;
+            width: 260px;
         }
-        .form-row {
-            grid-template-columns: 1fr;
-        }
-        .form-row-full {
-            grid-column: span 1;
-        }
-        .header-actions {
-            flex-wrap: wrap;
-        }
-    }
-
-    /* ========== UNIVERSAL RESPONSIVE (Donezo theme) ========== */
-    @media (max-width: 1024px) {
-        .filter-row, .filters-grid {
-            grid-template-columns: 1fr 1fr !important;
-        }
-    }
-
-    @media (max-width: 768px) {
-        .page-header {
-            flex-direction: column;
-            align-items: flex-start !important;
-        }
-        .page-header h1 {
-            font-size: 22px !important;
-        }
-        .filter-row, .filters-grid {
-            grid-template-columns: 1fr !important;
-        }
-        .modal-content {
-            width: 95% !important;
-            margin: 5% auto !important;
-        }
-        table {
-            font-size: 12px;
-        }
-        th, td {
-            padding: 8px !important;
-        }
+        .form-row { grid-template-columns: 1fr; }
+        .form-row-full { grid-column: span 1; }
+        .header-actions { flex-wrap: wrap; }
     }
 
     @media (max-width: 480px) {
-        .page-header h1 {
-            font-size: 20px !important;
-        }
-        .header-buttons, .header-actions {
+        .header-actions {
             flex-direction: column;
             width: 100%;
         }
-        .header-buttons .btn-primary,
-        .header-buttons .btn-secondary,
         .header-actions .btn-primary,
         .header-actions .btn-secondary {
             width: 100%;
             justify-content: center;
         }
-        .modal-content {
-            border-radius: 16px !important;
-        }
-        .modal-buttons {
-            flex-direction: column;
-        }
-        .modal-buttons button {
-            width: 100%;
-            justify-content: center;
-        }
+        .modal-content { border-radius: 16px !important; }
     }
-
-    @media (min-width: 1920px) {
-        .houses-main, .obiekt-main, .posts-container, .lids-container, .sim-cards-main {
-            max-width: 1700px !important;
-        }
-    }
-
 </style>
 
 <div class="kanban-wrapper">
@@ -912,27 +949,27 @@
                 <i class="fas fa-chalkboard"></i>
             </div>
             <div class="board-title-box">
-                <div class="board-title" id="currentBoardTitle">Загрузка...</div>
+                <div class="board-title" id="currentBoardTitle">Лиды</div>
                 <div class="board-stats">
-                    <i class="fas fa-users"></i> Всего лидов: <span id="totalLeadsCount">0</span>
+                    <i class="fas fa-users"></i> Всего: <span id="totalLeadsCount">0</span>
                 </div>
             </div>
         </div>
         <div class="header-actions">
-            <button class="btn-secondary btn-sm" onclick="showBoardSettings()">
+            <button class="btn-secondary btn-sm" onclick="showBoardSettings()" title="Настройки">
                 <i class="fas fa-sliders-h"></i>
             </button>
-            <button class="btn-secondary btn-sm" onclick="showAddColumnModal()">
+            <button class="btn-secondary btn-sm" onclick="showAddColumnModal()" title="Добавить колонку">
                 <i class="fas fa-plus"></i> Колонка
             </button>
-            <button class="btn-primary btn-sm" onclick="showAddLeadModal()">
+            <button class="btn-primary btn-sm" onclick="showAddLeadModal()" title="Новый лид">
                 <i class="fas fa-user-plus"></i> Лид
             </button>
-            <button class="btn-secondary btn-sm" onclick="exportBoard()">
-                <i class="fas fa-file-excel"></i> Экспорт
+            <button class="btn-secondary btn-sm" onclick="exportBoard()" title="Экспорт Excel">
+                <i class="fas fa-file-excel"></i>
             </button>
-            <button class="btn-secondary btn-sm" onclick="showImportModal()">
-                <i class="fas fa-upload"></i> Импорт
+            <button class="btn-secondary btn-sm" onclick="showImportModal()" title="Импорт Excel">
+                <i class="fas fa-upload"></i>
             </button>
         </div>
     </div>
@@ -941,11 +978,11 @@
     <div class="filters-bar">
         <div class="filter-group">
             <i class="fas fa-search"></i>
-            <input type="text" id="searchInput" placeholder="Поиск..." onkeyup="filterLeads()">
+            <input type="text" id="searchInput" placeholder="Поиск..." oninput="filterLeads(); saveFilters()">
         </div>
         <div class="filter-group">
             <i class="fas fa-tag"></i>
-            <select id="sourceFilter" onchange="filterLeads()">
+            <select id="sourceFilter" onchange="filterLeads(); saveFilters()">
                 <option value="all">Все источники</option>
                 <option value="Входящий">📞 Входящий</option>
                 <option value="Исходящий">📞 Исходящий</option>
@@ -958,7 +995,7 @@
         </div>
         <div class="filter-group">
             <i class="fas fa-home"></i>
-            <select id="mortgageFilter" onchange="filterLeads()">
+            <select id="mortgageFilter" onchange="filterLeads(); saveFilters()">
                 <option value="all">Ипотека</option>
                 <option value="yes">✅ Да</option>
                 <option value="no">❌ Нет</option>
@@ -966,7 +1003,7 @@
         </div>
         <div class="filter-group">
             <i class="fas fa-box"></i>
-            <select id="boxFilter" onchange="filterLeads()">
+            <select id="boxFilter" onchange="filterLeads(); saveFilters()">
                 <option value="all">Коробка</option>
                 <option value="yes">✅ Да</option>
                 <option value="no">❌ Нет</option>
@@ -974,13 +1011,13 @@
         </div>
         <div class="filter-group">
             <i class="fas fa-user"></i>
-            <select id="authorFilter" onchange="filterLeads()">
+            <select id="authorFilter" onchange="filterLeads(); saveFilters()">
                 <option value="all">Все сотрудники</option>
             </select>
         </div>
         <div class="filter-group">
             <i class="fas fa-calendar"></i>
-            <select id="dateFilter" onchange="filterLeads()">
+            <select id="dateFilter" onchange="filterLeads(); saveFilters()">
                 <option value="all">За всё время</option>
                 <option value="today">Сегодня</option>
                 <option value="week">Эта неделя</option>
@@ -989,12 +1026,13 @@
         </div>
         <div class="filter-group">
             <i class="fas fa-columns"></i>
-            <select id="columnFilter" onchange="filterLeads()">
+            <select id="columnFilter" onchange="filterLeads(); saveFilters()">
                 <option value="all">Все колонки</option>
             </select>
         </div>
-        <button class="btn-secondary btn-sm" onclick="resetFilters()">
-            <i class="fas fa-undo-alt"></i> Сброс
+        <button class="reset-filter-btn" onclick="resetFilters()" title="Сброс">
+            <i class="fas fa-undo-alt"></i>
+            <span>Сброс</span>
         </button>
     </div>
 
@@ -1002,7 +1040,7 @@
     <div class="kanban-main">
         <div class="board-scroll" id="boardContainer">
             <div class="kanban-board" id="kanbanBoard">
-                <div class="loading"><i class="fas fa-spinner fa-pulse"></i> Загрузка досок...</div>
+                <div class="loading"><i class="fas fa-spinner fa-pulse"></i> Загрузка...</div>
             </div>
         </div>
     </div>
@@ -1011,7 +1049,7 @@
     <div class="bottom-panel" id="boardsBottomPanel"></div>
 </div>
 
-<!-- Modal: Board Create/Edit -->
+<!-- Modal: Board -->
 <div id="boardModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
@@ -1027,7 +1065,7 @@
                 </div>
                 <div class="form-group">
                     <label>Цвет фона</label>
-                    <input type="color" id="boardColor" value="#0f172a">
+                    <input type="color" id="boardColor" value="#f8fafc">
                 </div>
                 <div class="form-group">
                     <label>Тип доски</label>
@@ -1039,7 +1077,7 @@
                 <div class="form-group" id="membersGroup" style="display: none;">
                     <label>Участники</label>
                     <select id="boardMembers" multiple style="height: 120px;"></select>
-                    <small>Ctrl + для выбора нескольких</small>
+                    <small style="color:var(--text-tertiary);">Ctrl + клик для нескольких</small>
                 </div>
             </div>
             <div class="modal-footer">
@@ -1052,18 +1090,18 @@
 
 <!-- Modal: Select Board -->
 <div id="selectBoardModal" class="modal">
-    <div class="modal-content" style="max-width: 450px;">
+    <div class="modal-content" style="max-width: 420px;">
         <div class="modal-header">
             <h2><i class="fas fa-columns"></i> Выбрать доску</h2>
             <span class="close" onclick="closeSelectBoardModal()">&times;</span>
         </div>
         <div class="modal-body">
             <div class="form-group">
-                <input type="text" id="boardSearch" placeholder="🔎 Поиск досок..." onkeyup="filterBoardsList()">
+                <input type="text" id="boardSearch" placeholder="🔎 Поиск..." onkeyup="filterBoardsList()">
             </div>
             <div id="boardsListContainer" style="max-height: 350px; overflow-y: auto;"></div>
             <button class="btn-primary" style="width: 100%; margin-top: 15px;" onclick="showAddBoardModal(); closeSelectBoardModal();">
-                <i class="fas fa-plus"></i> Создать доску
+                <i class="fas fa-plus"></i> Новая доска
             </button>
         </div>
     </div>
@@ -1077,6 +1115,21 @@
             <span class="close" onclick="closeBoardSettingsModal()">&times;</span>
         </div>
         <div class="modal-body">
+            <!-- Тема -->
+            <div class="form-group">
+                <label><i class="fas fa-palette"></i> Тема оформления</label>
+                <div class="theme-toggle-group">
+                    <button type="button" class="theme-btn theme-btn-light" id="themeLightBtn" onclick="setTheme('light')">
+                        <i class="fas fa-sun"></i>
+                        <span>Светлая</span>
+                    </button>
+                    <button type="button" class="theme-btn theme-btn-dark" id="themeDarkBtn" onclick="setTheme('dark')">
+                        <i class="fas fa-moon"></i>
+                        <span>Тёмная</span>
+                    </button>
+                </div>
+            </div>
+            <hr style="margin: 15px 0; border: none; border-top: 1px solid var(--border-color);">
             <div class="form-group">
                 <label>Название</label>
                 <input type="text" id="settingsBoardTitle">
@@ -1092,12 +1145,12 @@
                     <option value="0">Приватная</option>
                 </select>
             </div>
-            <hr style="border-color: var(--border-color); margin: 15px 0;">
+            <hr style="margin: 15px 0; border: none; border-top: 1px solid var(--border-color);">
             <button class="btn-secondary" onclick="archiveCurrentBoard()" style="width: 100%; margin-bottom: 10px;">
                 <i class="fas fa-archive"></i> Архивировать
             </button>
             <button class="btn-danger" onclick="deleteCurrentBoard()" style="width: 100%;">
-                <i class="fas fa-trash-alt"></i> Удалить
+                <i class="fas fa-trash-alt"></i> Удалить доску
             </button>
         </div>
         <div class="modal-footer">
@@ -1133,7 +1186,7 @@
                         <div class="color-option" style="background:#06b6d4;" data-color="#06b6d4"></div>
                         <div class="color-option" style="background:#eab308;" data-color="#eab308"></div>
                     </div>
-                    <input type="color" id="columnColor" style="width: 100%; margin-top: 10px;">
+                    <input type="color" id="columnColor" value="#1f7a4d" style="width: 100%; margin-top: 10px;">
                 </div>
             </div>
             <div class="modal-footer">
@@ -1238,9 +1291,8 @@
                 <input type="file" id="importFile" accept=".xlsx,.xls">
             </div>
             <div class="form-group">
-                <label>Формат файла:</label>
                 <small style="color: var(--text-tertiary); display: block;">
-                    Колонки: Колонка | Клиент | Телефон | Тема разговора | Комментарий | Источник | Ипотека | Коробка | Автор | Дата создания
+                    Колонки: Колонка | Клиент | Телефон | Тема | Комментарий | Источник | Ипотека | Коробка | Автор | Дата
                 </small>
                 <small style="color: var(--accent-blue); display: block; margin-top: 8px;">
                     * Обязательные поля: Клиент и Телефон
@@ -1255,38 +1307,76 @@
 </div>
 
 <script>
-// ==================== ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ====================
+// ==================== ГЛОБАЛЬНЫЕ ====================
 let currentBoardId = null;
 let allBoards = [];
 let allColumns = [];
 let allLeads = [];
 let draggedColumn = null;
 let draggedCard = null;
-let columnDropPosition = null;
 let currentUserId = {{ session.user_id }};
 let currentUserRole = "{{ session.role }}";
 let filterTimeout = null;
-
-// Clipboard for columns copy/paste
 let copiedColumnData = null;
 
 // ==================== INIT ====================
-document.addEventListener('DOMContentLoaded', () => {
-    loadBoards();
+document.addEventListener('DOMContentLoaded', async () => {
+    initTheme();
+    await loadBoards();
     loadUsersForFilters();
     loadUsersForMembers();
+    setTimeout(loadFilters, 500);
     
-    // Global keyboard handler for Ctrl+V
+    // Ctrl+V для вставки колонки
     document.addEventListener('keydown', (e) => {
         if ((e.ctrlKey || e.metaKey) && e.key === 'v') {
-            e.preventDefault();
+            const tag = (e.target.tagName || '').toLowerCase();
+            if (tag === 'input' || tag === 'textarea') return;
             if (copiedColumnData) {
+                e.preventDefault();
                 pasteColumnToCurrentBoard();
-                copiedColumnData = null; // Сброс после вставки
             }
         }
     });
 });
+
+// ==================== THEME (Светлая/Тёмная) ====================
+function initTheme() {
+    const saved = getCookie('lid_theme') || 'light';
+    setTheme(saved, true);
+}
+
+function setTheme(theme, silent) {
+    if (theme === 'dark') {
+        document.body.classList.add('theme-dark');
+        document.documentElement.classList.add('theme-dark');
+    } else {
+        document.body.classList.remove('theme-dark');
+        document.documentElement.classList.remove('theme-dark');
+    }
+    setCookie('lid_theme', theme, 365);
+    
+    const lightBtn = document.getElementById('themeLightBtn');
+    const darkBtn = document.getElementById('themeDarkBtn');
+    if (lightBtn && darkBtn) {
+        lightBtn.classList.toggle('active', theme === 'light');
+        darkBtn.classList.toggle('active', theme === 'dark');
+    }
+    
+    if (!silent) showToast(theme === 'dark' ? 'Тёмная тема активна' : 'Светлая тема активна');
+}
+
+// Cookie helpers
+function getCookie(name) {
+    const m = document.cookie.match(new RegExp('(?:^|; )' + name + '=([^;]*)'));
+    return m ? decodeURIComponent(m[1]) : null;
+}
+
+function setCookie(name, value, days) {
+    const d = new Date();
+    d.setTime(d.getTime() + (days || 30) * 24 * 60 * 60 * 1000);
+    document.cookie = `${name}=${encodeURIComponent(value)};path=/;expires=${d.toUTCString()}`;
+}
 
 // ==================== LOAD DATA ====================
 async function loadBoards() {
@@ -1294,7 +1384,14 @@ async function loadBoards() {
         const res = await fetch('/api/kanban/boards');
         allBoards = await res.json();
         const active = allBoards.filter(b => !b.is_archived);
-        if (active.length && !currentBoardId) currentBoardId = active[0].id;
+        if (!currentBoardId) {
+            const savedBoardId = getCookie('lid_current_board');
+            if (savedBoardId && active.find(b => b.id === parseInt(savedBoardId))) {
+                currentBoardId = parseInt(savedBoardId);
+            } else if (active.length) {
+                currentBoardId = active[0].id;
+            }
+        }
         if (currentBoardId) await loadBoardData();
         renderBoardsPanel();
         updateBoardUI();
@@ -1328,7 +1425,7 @@ async function loadLeads() {
 function renderKanbanBoard() {
     const container = document.getElementById('kanbanBoard');
     if (!allColumns.length) {
-        container.innerHTML = `<div class="add-column-btn" onclick="showAddColumnModal()"><i class="fas fa-plus"></i> Добавить колонку</div>`;
+        container.innerHTML = `<div class="add-column-btn" onclick="showAddColumnModal()"><i class="fas fa-plus"></i> Создать колонку</div>`;
         return;
     }
     
@@ -1345,7 +1442,7 @@ function renderKanbanBoard() {
                     <span class="column-badge" id="badge-${col.id}">${allLeads.filter(l => l.column_id === col.id).length}</span>
                 </div>
                 <div class="column-actions">
-                    <i class="fas fa-chevron-up" onclick="event.stopPropagation(); toggleColumn(${col.id})" style="cursor:pointer; margin-right: 10px; color:var(--text-tertiary);"></i>
+                    <i class="fas fa-chevron-up" onclick="event.stopPropagation(); toggleColumn(${col.id})" style="cursor:pointer; margin-right: 8px; color:var(--text-tertiary); font-size:11px;"></i>
                     <span class="column-menu-btn" onclick="event.stopPropagation(); toggleColumnMenu(event, ${col.id})">⋮</span>
                     <div class="column-dropdown" id="dropdown-${col.id}">
                         <div class="dropdown-item" onclick="editColumn(${col.id})"><i class="fas fa-edit"></i> Редактировать</div>
@@ -1365,12 +1462,19 @@ function renderKanbanBoard() {
         </div>
     `).join('');
     
-    container.innerHTML += `<div class="add-column-btn" onclick="showAddColumnModal()"><i class="fas fa-plus"></i> Добавить колонку</div>`;
+    container.innerHTML += `<div class="add-column-btn" onclick="showAddColumnModal()"><i class="fas fa-plus"></i> Новая колонка</div>`;
 }
 
 function renderCards(columnId) {
-    const leads = allLeads.filter(l => l.column_id === columnId).sort((a,b) => (a.order_index || 0) - (b.order_index || 0));
-    if (!leads.length) return '<div style="padding:20px; text-align:center; color:var(--text-tertiary); font-size:12px;">Нет лидов</div>';
+    // Сортировка: order_index меньше = выше; при равных - новые сверху
+    const leads = allLeads.filter(l => l.column_id === columnId).sort((a, b) => {
+        const oa = (a.order_index !== undefined && a.order_index !== null) ? a.order_index : 0;
+        const ob = (b.order_index !== undefined && b.order_index !== null) ? b.order_index : 0;
+        if (oa !== ob) return oa - ob;
+        return new Date(b.created_date) - new Date(a.created_date);
+    });
+    
+    if (!leads.length) return '<div style="padding:16px; text-align:center; color:var(--text-tertiary); font-size:11px;"><i class="fas fa-inbox"></i> Нет лидов</div>';
     
     return leads.map(lead => `
         <div class="kanban-card" data-lead-id="${lead.id}" data-order="${lead.order_index || 0}" draggable="true"
@@ -1379,15 +1483,15 @@ function renderCards(columnId) {
             <div class="card-header">
                 <span class="card-name">${escapeHtml(lead.client_name)}</span>
                 <div class="card-actions">
-                    <button onclick="event.stopPropagation(); editLead(${lead.id})"><i class="fas fa-pen"></i></button>
-                    <button onclick="event.stopPropagation(); deleteLead(${lead.id})"><i class="fas fa-trash"></i></button>
+                    <button onclick="event.stopPropagation(); editLead(${lead.id})" title="Редактировать"><i class="fas fa-pen"></i></button>
+                    <button onclick="event.stopPropagation(); deleteLead(${lead.id})" title="Удалить"><i class="fas fa-trash"></i></button>
                 </div>
             </div>
             <div class="card-phone"><i class="fas fa-phone-alt"></i> ${escapeHtml(lead.phone)}</div>
             <div class="card-info">
                 <span class="source-badge source-${getSourceClass(lead.source)}">${getSourceIcon(lead.source)} ${lead.source}</span>
             </div>
-            ${lead.topic ? `<div class="card-topic" style="font-size:11px; color:var(--text-secondary);"><i class="fas fa-comment"></i> ${escapeHtml(lead.topic)}</div>` : ''}
+            ${lead.topic ? `<div class="card-topic"><i class="fas fa-comment"></i> ${escapeHtml(lead.topic)}</div>` : ''}
             <div class="card-meta">
                 <span><i class="far fa-calendar-alt"></i> ${formatDate(lead.created_date)}</span>
                 <div class="card-badges">
@@ -1410,9 +1514,9 @@ function getSourceIcon(s) {
 }
 
 function formatDate(d) { return d ? new Date(d).toLocaleDateString() : '—'; }
-function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;'})[m]); }
+function escapeHtml(str) { if(!str) return ''; return String(str).replace(/[&<>"]/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m]); }
 
-// ==================== COLUMN DRAG & DROP (ГОРИЗОНТАЛЬНЫЙ SWAP) ====================
+// ==================== COLUMN DRAG & DROP ====================
 function handleDragStart(e) {
     const col = e.target.closest('.kanban-column');
     if (!col) return;
@@ -1427,7 +1531,6 @@ function handleDragEnd(e) {
         c.classList.remove('dragging', 'drag-over');
     });
     draggedColumn = null;
-    columnDropPosition = null;
 }
 
 function handleDragOver(e) {
@@ -1457,7 +1560,6 @@ async function handleDrop(e) {
     const targetColData = allColumns.find(c => c.id === targetId);
     if (!sourceCol || !targetColData) return;
 
-    // Простой обмен order_index
     const sourceOrder = sourceCol.order_index;
     const targetOrder = targetColData.order_index;
 
@@ -1544,7 +1646,7 @@ function toggleColumn(id) {
     if (col) col.classList.toggle('collapsed');
 }
 
-// ==================== CRUD OPERATIONS ====================
+// ==================== CRUD ====================
 async function createColumn(title, color) {
     const res = await fetch('/api/kanban/columns', {
         method: 'POST', headers: {'Content-Type':'application/json'},
@@ -1584,16 +1686,16 @@ async function copyColumnToClipboard(id) {
             box: l.box
         }))
     };
-    showToast(`Колонка "${col.title}" скопирована. Нажмите Ctrl+V для вставки`);
+    showToast(`Колонка "${col.title}" скопирована (Ctrl+V)`);
 }
 
 async function pasteColumnToCurrentBoard() {
     if (!copiedColumnData) {
-        showToast('Нет скопированной колонки. Сначала скопируйте колонку.', 3000);
+        showToast('Сначала скопируйте колонку', 3000);
         return;
     }
     if (!currentBoardId) {
-        showToast('Выберите доску для вставки', 3000);
+        showToast('Выберите доску', 3000);
         return;
     }
     
@@ -1629,18 +1731,35 @@ async function pasteColumnToCurrentBoard() {
         await loadColumns();
         await loadLeads();
         renderKanbanBoard();
-        showToast(`Колонка "${copiedColumnData.title}" вставлена с ${copiedColumnData.leads.length} лидами`);
+        showToast(`Вставлено: ${copiedColumnData.leads.length} лидов`);
+        copiedColumnData = null;
     }
 }
 
 async function createLead(data) {
-    const firstCol = allColumns[0]?.id;
+    const firstCol = [...allColumns].sort((a,b) => a.order_index - b.order_index)[0]?.id;
     if (!firstCol) { alert('Сначала создайте колонку'); return false; }
+    
+    // НОВЫЕ ЛИДЫ ВСЕГДА В ПЕРВОЙ КОЛОНКЕ, СВЕРХУ:
+    // Сдвигаем order_index всех существующих лидов в первой колонке +1
+    const leadsInFirstCol = allLeads.filter(l => l.column_id === firstCol);
+    
     const res = await fetch('/api/kanban/leads', {
         method: 'POST', headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ ...data, board_id: currentBoardId, column_id: firstCol, order_index: 0 })
+        body: JSON.stringify({ 
+            ...data, 
+            board_id: currentBoardId, 
+            column_id: firstCol, 
+            order_index: -Date.now() // Отрицательный timestamp - всегда наверху
+        })
     });
-    if (res.ok) { await loadLeads(); renderKanbanBoard(); updateTotalCount(); showToast('Лид добавлен'); return true; }
+    if (res.ok) { 
+        await loadLeads(); 
+        renderKanbanBoard(); 
+        updateTotalCount(); 
+        showToast('Лид добавлен'); 
+        return true; 
+    }
     return false;
 }
 
@@ -1665,7 +1784,9 @@ function updateTotalCount() {
 
 function updateColumnFilter() {
     const sel = document.getElementById('columnFilter');
+    const prev = sel.value;
     sel.innerHTML = '<option value="all">Все колонки</option>' + allColumns.map(c => `<option value="${c.id}">${escapeHtml(c.title)}</option>`).join('');
+    if (prev) sel.value = prev;
 }
 
 function filterLeads() {
@@ -1706,7 +1827,36 @@ function filterLeads() {
             if (show) visible++;
         });
         document.getElementById('totalLeadsCount').textContent = visible;
-    }, 300);
+    }, 200);
+}
+
+function saveFilters() {
+    const filters = {
+        search: document.getElementById('searchInput').value,
+        source: document.getElementById('sourceFilter').value,
+        mortgage: document.getElementById('mortgageFilter').value,
+        box: document.getElementById('boxFilter').value,
+        author: document.getElementById('authorFilter').value,
+        date: document.getElementById('dateFilter').value,
+        column: document.getElementById('columnFilter').value
+    };
+    setCookie('lid_filters', JSON.stringify(filters), 1);
+}
+
+function loadFilters() {
+    try {
+        const raw = getCookie('lid_filters');
+        if (!raw) return;
+        const filters = JSON.parse(raw);
+        if (filters.search) document.getElementById('searchInput').value = filters.search;
+        if (filters.source) document.getElementById('sourceFilter').value = filters.source;
+        if (filters.mortgage) document.getElementById('mortgageFilter').value = filters.mortgage;
+        if (filters.box) document.getElementById('boxFilter').value = filters.box;
+        if (filters.author) document.getElementById('authorFilter').value = filters.author;
+        if (filters.date) document.getElementById('dateFilter').value = filters.date;
+        if (filters.column) document.getElementById('columnFilter').value = filters.column;
+        filterLeads();
+    } catch(e) {}
 }
 
 function resetFilters() {
@@ -1717,6 +1867,7 @@ function resetFilters() {
     document.getElementById('authorFilter').value = 'all';
     document.getElementById('dateFilter').value = 'all';
     document.getElementById('columnFilter').value = 'all';
+    setCookie('lid_filters', '', -1);
     filterLeads();
     showToast('Фильтры сброшены');
 }
@@ -1733,25 +1884,140 @@ function showToast(msg, duration = 2500) {
 }
 
 // ==================== MODALS ====================
-function showAddBoardModal() { document.getElementById('boardModalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Создать доску'; document.getElementById('boardId').value = ''; document.getElementById('boardForm').reset(); document.getElementById('boardModal').style.display = 'block'; }
-function closeBoardModal() { document.getElementById('boardModal').style.display = 'none'; }
-function showAddColumnModal() { if(!currentBoardId) {alert('Выберите доску'); return;} document.getElementById('columnModalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Добавить колонку'; document.getElementById('columnId').value = ''; document.getElementById('columnForm').reset(); document.getElementById('columnColor').value = '#1f7a4d'; document.getElementById('columnModal').style.display = 'block'; }
-function closeColumnModal() { document.getElementById('columnModal').style.display = 'none'; }
-function showAddLeadModal() { if(!currentBoardId) {alert('Выберите доску'); return;} if(!allColumns.length) {alert('Сначала создайте колонку'); return;} document.getElementById('leadModalTitle').innerHTML = '<i class="fas fa-user-plus"></i> Добавить лид'; document.getElementById('leadId').value = ''; document.getElementById('leadForm').reset(); document.getElementById('leadModal').style.display = 'block'; }
-function closeLeadModal() { document.getElementById('leadModal').style.display = 'none'; }
-function showBoardSettings() { const b = allBoards.find(b => b.id === currentBoardId); if(b) { document.getElementById('settingsBoardTitle').value = b.title; document.getElementById('settingsBoardColor').value = b.color || '#0f172a'; document.getElementById('settingsBoardIsPublic').value = b.is_public; document.getElementById('boardSettingsModal').style.display = 'block'; } }
-function closeBoardSettingsModal() { document.getElementById('boardSettingsModal').style.display = 'none'; }
-function showImportModal() { document.getElementById('importModal').style.display = 'block'; }
-function closeImportModal() { document.getElementById('importModal').style.display = 'none'; }
-function showSelectBoardModal() { loadBoardsList(); document.getElementById('selectBoardModal').style.display = 'block'; }
-function closeSelectBoardModal() { document.getElementById('selectBoardModal').style.display = 'none'; }
-function closeViewLeadModal() { document.getElementById('viewLeadModal').style.display = 'none'; }
+function openModal(id) { document.getElementById(id).style.display = 'flex'; }
+function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
-function editColumn(id) { const c = allColumns.find(c => c.id === id); if(c) { document.getElementById('columnModalTitle').innerHTML = '<i class="fas fa-edit"></i> Редактировать колонку'; document.getElementById('columnId').value = c.id; document.getElementById('columnTitle').value = c.title; document.getElementById('columnColor').value = c.color || '#1f7a4d'; document.getElementById('columnModal').style.display = 'block'; } }
-function editLead(id) { const l = allLeads.find(l => l.id === id); if(l) { document.getElementById('leadModalTitle').innerHTML = '<i class="fas fa-edit"></i> Редактировать лид'; document.getElementById('leadId').value = l.id; document.getElementById('leadClientName').value = l.client_name; document.getElementById('leadPhone').value = l.phone; document.getElementById('leadSource').value = l.source; document.getElementById('leadTopic').value = l.topic || ''; document.getElementById('leadComment').value = l.comment || ''; document.getElementById('leadMortgage').value = l.mortgage; document.getElementById('leadBox').value = l.box; document.getElementById('leadModal').style.display = 'block'; } }
-function viewLead(id) { const l = allLeads.find(l => l.id === id); if(!l) return; const col = allColumns.find(c => c.id === l.column_id); document.getElementById('viewLeadTitle').innerHTML = `<i class="fas fa-user-circle"></i> ${escapeHtml(l.client_name)}`; document.getElementById('viewLeadContent').innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;"><div><strong>📞 Телефон:</strong><br>${escapeHtml(l.phone)}</div><div><strong>📌 Источник:</strong><br>${l.source}</div><div><strong>📋 Колонка:</strong><br>${col ? escapeHtml(col.title) : '—'}</div><div><strong>👤 Автор:</strong><br>${escapeHtml(l.author_name || '—')}</div><div><strong>💬 Тема:</strong><br>${escapeHtml(l.topic || '-')}</div><div><strong>🏦 Ипотека:</strong><br>${l.mortgage ? '✅ Да' : '❌ Нет'}</div><div><strong>📦 Коробка:</strong><br>${l.box ? '✅ Да' : '❌ Нет'}</div><div><strong>📅 Дата:</strong><br>${new Date(l.created_date).toLocaleString()}</div><div class="form-row-full"><strong>📝 Комментарий:</strong><br>${escapeHtml(l.comment || '-')}</div></div>`; document.getElementById('viewLeadModal').style.display = 'block'; }
+function showAddBoardModal() { 
+    document.getElementById('boardModalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Создать доску'; 
+    document.getElementById('boardId').value = ''; 
+    document.getElementById('boardForm').reset(); 
+    openModal('boardModal'); 
+}
+function closeBoardModal() { closeModal('boardModal'); }
+
+function showAddColumnModal() { 
+    if(!currentBoardId) {alert('Выберите доску'); return;} 
+    document.getElementById('columnModalTitle').innerHTML = '<i class="fas fa-plus-circle"></i> Добавить колонку'; 
+    document.getElementById('columnId').value = ''; 
+    document.getElementById('columnForm').reset(); 
+    document.getElementById('columnColor').value = '#1f7a4d'; 
+    openModal('columnModal'); 
+}
+function closeColumnModal() { closeModal('columnModal'); }
+
+function showAddLeadModal() { 
+    if(!currentBoardId) {alert('Выберите доску'); return;} 
+    if(!allColumns.length) {alert('Сначала создайте колонку'); return;} 
+    document.getElementById('leadModalTitle').innerHTML = '<i class="fas fa-user-plus"></i> Добавить лид'; 
+    document.getElementById('leadId').value = ''; 
+    document.getElementById('leadForm').reset(); 
+    openModal('leadModal'); 
+}
+function closeLeadModal() { closeModal('leadModal'); }
+
+function showBoardSettings() { 
+    const b = allBoards.find(b => b.id === currentBoardId); 
+    if(b) { 
+        document.getElementById('settingsBoardTitle').value = b.title; 
+        document.getElementById('settingsBoardColor').value = b.color || '#f8fafc'; 
+        document.getElementById('settingsBoardIsPublic').value = b.is_public; 
+    } 
+    const isDark = document.body.classList.contains('theme-dark');
+    const lightBtn = document.getElementById('themeLightBtn');
+    const darkBtn = document.getElementById('themeDarkBtn');
+    if (lightBtn && darkBtn) {
+        lightBtn.classList.toggle('active', !isDark);
+        darkBtn.classList.toggle('active', isDark);
+    }
+    openModal('boardSettingsModal'); 
+}
+function closeBoardSettingsModal() { closeModal('boardSettingsModal'); }
+
+function showImportModal() { openModal('importModal'); }
+function closeImportModal() { closeModal('importModal'); }
+
+function showSelectBoardModal() { loadBoardsList(); openModal('selectBoardModal'); }
+function closeSelectBoardModal() { closeModal('selectBoardModal'); }
+function closeViewLeadModal() { closeModal('viewLeadModal'); }
+
+function editColumn(id) { 
+    const c = allColumns.find(c => c.id === id); 
+    if(c) { 
+        document.getElementById('columnModalTitle').innerHTML = '<i class="fas fa-edit"></i> Редактировать колонку'; 
+        document.getElementById('columnId').value = c.id; 
+        document.getElementById('columnTitle').value = c.title; 
+        document.getElementById('columnColor').value = c.color || '#1f7a4d'; 
+        openModal('columnModal'); 
+    } 
+}
+
+function editLead(id) { 
+    const l = allLeads.find(l => l.id === id); 
+    if(l) { 
+        document.getElementById('leadModalTitle').innerHTML = '<i class="fas fa-edit"></i> Редактировать лид'; 
+        document.getElementById('leadId').value = l.id; 
+        document.getElementById('leadClientName').value = l.client_name; 
+        document.getElementById('leadPhone').value = l.phone; 
+        document.getElementById('leadSource').value = l.source; 
+        document.getElementById('leadTopic').value = l.topic || ''; 
+        document.getElementById('leadComment').value = l.comment || ''; 
+        document.getElementById('leadMortgage').value = l.mortgage; 
+        document.getElementById('leadBox').value = l.box; 
+        openModal('leadModal'); 
+    } 
+}
+
+function viewLead(id) { 
+    const l = allLeads.find(l => l.id === id); 
+    if(!l) return; 
+    const col = allColumns.find(c => c.id === l.column_id); 
+    document.getElementById('viewLeadTitle').innerHTML = `<i class="fas fa-user-circle"></i> ${escapeHtml(l.client_name)}`; 
+    document.getElementById('viewLeadContent').innerHTML = `
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div style="background:var(--bg-tertiary); padding:12px; border-radius:var(--radius-md);">
+                <div style="font-size:10px; color:var(--text-tertiary); margin-bottom:4px;"><i class="fas fa-phone-alt"></i> Телефон</div>
+                <div style="font-weight:600; color:var(--text-primary);">${escapeHtml(l.phone)}</div>
+            </div>
+            <div style="background:var(--bg-tertiary); padding:12px; border-radius:var(--radius-md);">
+                <div style="font-size:10px; color:var(--text-tertiary); margin-bottom:4px;"><i class="fas fa-tag"></i> Источник</div>
+                <div style="font-weight:600; color:var(--text-primary);">${escapeHtml(l.source)}</div>
+            </div>
+            <div style="background:var(--bg-tertiary); padding:12px; border-radius:var(--radius-md);">
+                <div style="font-size:10px; color:var(--text-tertiary); margin-bottom:4px;"><i class="fas fa-columns"></i> Колонка</div>
+                <div style="font-weight:600; color:var(--text-primary);">${col ? escapeHtml(col.title) : '—'}</div>
+            </div>
+            <div style="background:var(--bg-tertiary); padding:12px; border-radius:var(--radius-md);">
+                <div style="font-size:10px; color:var(--text-tertiary); margin-bottom:4px;"><i class="fas fa-user"></i> Автор</div>
+                <div style="font-weight:600; color:var(--text-primary);">${escapeHtml(l.author_name || '—')}</div>
+            </div>
+            <div style="background:var(--bg-tertiary); padding:12px; border-radius:var(--radius-md);">
+                <div style="font-size:10px; color:var(--text-tertiary); margin-bottom:4px;"><i class="fas fa-comment"></i> Тема</div>
+                <div style="font-weight:600; color:var(--text-primary);">${escapeHtml(l.topic || '—')}</div>
+            </div>
+            <div style="background:var(--bg-tertiary); padding:12px; border-radius:var(--radius-md);">
+                <div style="font-size:10px; color:var(--text-tertiary); margin-bottom:4px;"><i class="fas fa-home"></i> Ипотека</div>
+                <div style="font-weight:600; color:var(--text-primary);">${l.mortgage ? '✅ Да' : '❌ Нет'}</div>
+            </div>
+            <div style="background:var(--bg-tertiary); padding:12px; border-radius:var(--radius-md);">
+                <div style="font-size:10px; color:var(--text-tertiary); margin-bottom:4px;"><i class="fas fa-box"></i> Коробка</div>
+                <div style="font-weight:600; color:var(--text-primary);">${l.box ? '✅ Да' : '❌ Нет'}</div>
+            </div>
+            <div style="background:var(--bg-tertiary); padding:12px; border-radius:var(--radius-md);">
+                <div style="font-size:10px; color:var(--text-tertiary); margin-bottom:4px;"><i class="fas fa-calendar"></i> Дата</div>
+                <div style="font-weight:600; color:var(--text-primary);">${new Date(l.created_date).toLocaleString()}</div>
+            </div>
+            <div style="background:var(--bg-tertiary); padding:12px; border-radius:var(--radius-md); grid-column:span 2;">
+                <div style="font-size:10px; color:var(--text-tertiary); margin-bottom:4px;"><i class="fas fa-comment-alt"></i> Комментарий</div>
+                <div style="font-weight:500; color:var(--text-primary);">${escapeHtml(l.comment || '—')}</div>
+            </div>
+        </div>
+    `; 
+    openModal('viewLeadModal'); 
+}
+
 function exportColumn(id) { window.open(`/api/kanban/columns/${id}/export/excel`, '_blank'); }
 function exportBoard() { window.open(`/api/kanban/boards/${currentBoardId}/export/excel`, '_blank'); }
+
 async function importExcel() { 
     const file = document.getElementById('importFile').files[0]; 
     if(!file) {alert('Выберите файл'); return;} 
@@ -1765,7 +2031,7 @@ async function importExcel() {
         await loadLeads(); 
         renderKanbanBoard(); 
         updateTotalCount(); 
-        showToast(`Импортировано ${r.count} лидов${r.skipped ? ` (пропущено: ${r.skipped})` : ''}`); 
+        showToast(`Импортировано: ${r.count}${r.skipped ? ` (пропущено: ${r.skipped})` : ''}`); 
         closeImportModal(); 
         document.getElementById('importFile').value = '';
     } else { 
@@ -1773,20 +2039,114 @@ async function importExcel() {
         alert('Ошибка импорта: ' + (err.error || 'Неизвестная ошибка')); 
     } 
 }
-async function switchBoard(id) { currentBoardId = id; await loadBoardData(); renderBoardsPanel(); updateBoardUI(); resetFilters(); showToast('Доска переключена'); }
-function updateBoardUI() { const b = allBoards.find(b => b.id === currentBoardId); if(b) { document.getElementById('currentBoardTitle').innerHTML = `<i class="fas fa-chalkboard"></i> ${escapeHtml(b.title)}`; document.getElementById('boardContainer').style.background = b.color || '#0f172a'; } }
-function renderBoardsPanel() { const active = allBoards.filter(b => !b.is_archived); const panel = document.getElementById('boardsBottomPanel'); panel.innerHTML = active.map(b => `<div class="board-tab ${currentBoardId === b.id ? 'active' : ''}" onclick="switchBoard(${b.id})"><div class="board-tab-icon" style="background:${b.color || '#1f7a4d'}"><i class="fas fa-columns"></i></div><span class="board-tab-name">${escapeHtml(b.title)}</span></div>`).join('') + `<div class="board-tab create-board-tab" onclick="showAddBoardModal()"><i class="fas fa-plus"></i><span style="margin-left:6px;">Создать</span></div>`; }
-function loadBoardsList() { const c = document.getElementById('boardsListContainer'); c.innerHTML = allBoards.filter(b => !b.is_archived).map(b => `<div class="board-tab ${currentBoardId === b.id ? 'active' : ''}" style="margin-bottom:8px; display:flex; align-items:center; gap:10px; padding:8px; border-radius:8px; cursor:pointer;" onclick="selectBoard(${b.id})"><div class="board-tab-icon" style="background:${b.color || '#1f7a4d'}"><i class="fas fa-columns"></i></div><span style="flex:1">${escapeHtml(b.title)}</span></div>`).join(''); if(!c.innerHTML) c.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-tertiary);">Нет досок</div>'; }
-function selectBoard(id) { switchBoard(id); closeSelectBoardModal(); }
-function filterBoardsList() { const s = document.getElementById('boardSearch').value.toLowerCase(); document.querySelectorAll('#boardsListContainer .board-tab').forEach(tab => { tab.style.display = tab.innerText.toLowerCase().includes(s) ? 'flex' : 'none'; }); }
-async function loadUsersForFilters() { const res = await fetch('/api/users/list'); const users = await res.json(); const sel = document.getElementById('authorFilter'); sel.innerHTML = '<option value="all">Все сотрудники</option>' + users.map(u => `<option value="${u.id}">${escapeHtml(u.full_name)}</option>`).join(''); }
-async function loadUsersForMembers() { const res = await fetch('/api/users/list'); const users = await res.json(); const sel = document.getElementById('boardMembers'); sel.innerHTML = users.map(u => `<option value="${u.id}">${escapeHtml(u.full_name)}</option>`).join(''); }
-async function updateCurrentBoard() { await updateBoard(currentBoardId, { title: document.getElementById('settingsBoardTitle').value, color: document.getElementById('settingsBoardColor').value, is_public: parseInt(document.getElementById('settingsBoardIsPublic').value) }); closeBoardSettingsModal(); }
-async function archiveCurrentBoard() { await fetch(`/api/kanban/boards/${currentBoardId}/archive`, { method: 'PUT' }); await loadBoards(); const active = allBoards.filter(b => !b.is_archived); if(active.length) currentBoardId = active[0].id; else currentBoardId = null; await loadBoardData(); renderBoardsPanel(); updateBoardUI(); closeBoardSettingsModal(); showToast('Доска архивирована'); }
-async function deleteCurrentBoard() { if(!confirm('Удалить доску безвозвратно?')) return; await fetch(`/api/kanban/boards/${currentBoardId}`, { method: 'DELETE' }); await loadBoards(); const active = allBoards.filter(b => !b.is_archived); if(active.length) currentBoardId = active[0].id; else currentBoardId = null; await loadBoardData(); renderBoardsPanel(); updateBoardUI(); closeBoardSettingsModal(); showToast('Доска удалена'); }
-async function updateBoard(id, data) { await fetch(`/api/kanban/boards/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) }); await loadBoards(); if(currentBoardId === id) updateBoardUI(); showToast('Доска обновлена'); }
 
-// ==================== FORM SUBMIT HANDLERS ====================
+async function switchBoard(id) { 
+    currentBoardId = id; 
+    setCookie('lid_current_board', id, 90);
+    await loadBoardData(); 
+    renderBoardsPanel(); 
+    updateBoardUI(); 
+    loadFilters();
+    showToast('Доска переключена'); 
+}
+
+function updateBoardUI() { 
+    const b = allBoards.find(b => b.id === currentBoardId); 
+    if(b) { 
+        document.getElementById('currentBoardTitle').innerHTML = `<i class="fas fa-chalkboard"></i> ${escapeHtml(b.title)}`; 
+        document.getElementById('boardContainer').style.background = b.color || ''; 
+    } 
+}
+
+function renderBoardsPanel() { 
+    const active = allBoards.filter(b => !b.is_archived); 
+    const panel = document.getElementById('boardsBottomPanel'); 
+    panel.innerHTML = active.map(b => `
+        <div class="board-tab ${currentBoardId === b.id ? 'active' : ''}" onclick="switchBoard(${b.id})">
+            <div class="board-tab-icon" style="background:${b.color || '#1f7a4d'}"><i class="fas fa-columns"></i></div>
+            <span class="board-tab-name">${escapeHtml(b.title)}</span>
+        </div>
+    `).join('') + `<div class="board-tab create-board-tab" onclick="showAddBoardModal()"><i class="fas fa-plus"></i><span style="margin-left:6px;">Создать</span></div>`; 
+}
+
+function loadBoardsList() { 
+    const c = document.getElementById('boardsListContainer'); 
+    c.innerHTML = allBoards.filter(b => !b.is_archived).map(b => `
+        <div class="board-tab ${currentBoardId === b.id ? 'active' : ''}" style="margin-bottom:8px; display:flex; align-items:center; gap:10px; padding:8px; border-radius:8px; cursor:pointer;" onclick="selectBoard(${b.id})">
+            <div class="board-tab-icon" style="background:${b.color || '#1f7a4d'}"><i class="fas fa-columns"></i></div>
+            <span style="flex:1">${escapeHtml(b.title)}</span>
+        </div>
+    `).join(''); 
+    if(!c.innerHTML) c.innerHTML = '<div style="padding:20px; text-align:center; color:var(--text-tertiary);">Нет досок</div>'; 
+}
+
+function selectBoard(id) { switchBoard(id); closeSelectBoardModal(); }
+
+function filterBoardsList() { 
+    const s = document.getElementById('boardSearch').value.toLowerCase(); 
+    document.querySelectorAll('#boardsListContainer .board-tab').forEach(tab => { 
+        tab.style.display = tab.innerText.toLowerCase().includes(s) ? 'flex' : 'none'; 
+    }); 
+}
+
+async function loadUsersForFilters() { 
+    const res = await fetch('/api/users/list'); 
+    const users = await res.json(); 
+    const sel = document.getElementById('authorFilter'); 
+    sel.innerHTML = '<option value="all">Все сотрудники</option>' + users.map(u => `<option value="${u.id}">${escapeHtml(u.full_name)}</option>`).join(''); 
+}
+
+async function loadUsersForMembers() { 
+    const res = await fetch('/api/users/list'); 
+    const users = await res.json(); 
+    const sel = document.getElementById('boardMembers'); 
+    sel.innerHTML = users.map(u => `<option value="${u.id}">${escapeHtml(u.full_name)}</option>`).join(''); 
+}
+
+async function updateCurrentBoard() { 
+    await updateBoard(currentBoardId, { 
+        title: document.getElementById('settingsBoardTitle').value, 
+        color: document.getElementById('settingsBoardColor').value, 
+        is_public: parseInt(document.getElementById('settingsBoardIsPublic').value) 
+    }); 
+    closeBoardSettingsModal(); 
+}
+
+async function archiveCurrentBoard() { 
+    await fetch(`/api/kanban/boards/${currentBoardId}/archive`, { method: 'PUT' }); 
+    await loadBoards(); 
+    const active = allBoards.filter(b => !b.is_archived); 
+    if(active.length) currentBoardId = active[0].id; 
+    else currentBoardId = null; 
+    await loadBoardData(); 
+    renderBoardsPanel(); 
+    updateBoardUI(); 
+    closeBoardSettingsModal(); 
+    showToast('Доска архивирована'); 
+}
+
+async function deleteCurrentBoard() { 
+    if(!confirm('Удалить доску безвозвратно?')) return; 
+    await fetch(`/api/kanban/boards/${currentBoardId}`, { method: 'DELETE' }); 
+    await loadBoards(); 
+    const active = allBoards.filter(b => !b.is_archived); 
+    if(active.length) currentBoardId = active[0].id; 
+    else currentBoardId = null; 
+    await loadBoardData(); 
+    renderBoardsPanel(); 
+    updateBoardUI(); 
+    closeBoardSettingsModal(); 
+    showToast('Доска удалена'); 
+}
+
+async function updateBoard(id, data) { 
+    await fetch(`/api/kanban/boards/${id}`, { method: 'PUT', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) }); 
+    await loadBoards(); 
+    if(currentBoardId === id) updateBoardUI(); 
+    showToast('Доска обновлена'); 
+}
+
+// ==================== FORM HANDLERS ====================
 document.getElementById('boardForm').addEventListener('submit', async (e) => {
     e.preventDefault();
     const id = document.getElementById('boardId').value;
